@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "title": "Tom Snyder",
+    "subtitle": "Full-time Developer & Entrepreneur based in Austin, TX",
+    "imageUrl": "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?q=80&w=800&auto=format&fit=crop",
+    "slug": "tom-snyder"
+  },
+  {
+    "id": 2,
+    "title": "Soundharya Muthukrishnan",
+    "subtitle": "Designer based in Chennai, India",
+    "imageUrl": "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800&auto=format&fit=crop",
+    "slug": "soundharya-muthukrishnan"
+  },
+  {
+    "id": 3,
+    "title": "Gannon Brealin",
+    "subtitle": "Full-time Developer, Designer, and Social Entrepreneur based in Newport Beach, CA",
+    "imageUrl": "https://images.unsplash.com/photo-1486946255432-0514a16f1f8d?q=80&w=800&auto=format&fit=crop",
+    "slug": "gannon-brealin"
+  },
+  {
+    "id": 4,
+    "title": "Kenneth Quist",
+    "subtitle": "Retired Dentist in South Carolina, USA",
+    "imageUrl": "https://images.unsplash.com/photo-1531496212346-621396f2583b?q=80&w=800&auto=format&fit=crop",
+    "slug": "kenneth-quist"
+  },
+  {
+    "id": 5,
+    "title": "Sabina Cabrera",
+    "subtitle": "Designer at MagicPitch living in NYC",
+    "imageUrl": "https://images.unsplash.com/photo-1593697821252-0c9137d9fc45?q=80&w=800&auto=format&fit=crop",
+    "slug": "sabina-cabrera"
+  },
+  {
+    "id": 6,
+    "title": "Ákos Könöz",
+    "subtitle": "Principal Software Developer in Hungary",
+    "imageUrl": "https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?q=80&w=800&auto=format&fit=crop",
+    "slug": "akos-konoz"
+  },
+  {
+    "id": 7,
+    "title": "Viktor Vlahin (Eksenoq)",
+    "subtitle": "Creative Developer and Programmer from Croatia",
+    "imageUrl": "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=800&auto=format&fit=crop",
+    "slug": "viktor-vlahin"
+  },
+  {
+    "id": 8,
+    "title": "Brett Jackson",
+    "subtitle": "Designer & Co-founder of Salupa Design",
+    "imageUrl": "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=800&auto=format&fit=crop",
+    "slug": "brett-jackson"
+  },
+  {
+    "id": 9,
+    "title": "Jacob Titus",
+    "subtitle": "Software Engineer, and Creative Director based in South Bend, Indiana",
+    "imageUrl": "https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=800&auto=format&fit=crop",
+    "slug": "jacob-titus"
+  },
+  {
+    "id": 10,
+    "title": "Jet",
+    "subtitle": "Product Designer and Founder from Washington, DC",
+    "imageUrl": "https://images.unsplash.com/photo-1504384308090-c54be3858f53?q=80&w=800&auto=format&fit=crop",
+    "slug": "jet"
+  },
+  {
+    "id": 11,
+    "title": "Luca DeFretias-Hansen",
+    "subtitle": "Founder and Designer based in Miami, FL",
+    "imageUrl": "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?q=80&w=800&auto=format&fit=crop",
+    "slug": "luca-defretias-hansen"
+  },
+  {
+    "id": 12,
+    "title": "Mike DeMarco",
+    "subtitle": "Baltimore-based Music Producer",
+    "imageUrl": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800&auto=format&fit=crop",
+    "slug": "mike-demarco"
+  }
+]

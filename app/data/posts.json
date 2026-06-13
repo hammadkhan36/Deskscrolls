@@ -1,0 +1,68 @@
+{
+  "posts": [
+    {
+      "slug": "ivan-nedyalkov",
+      "title": "Ivan Nedyalkov",
+      "author": "Ivan Nedyalkov",
+      "authorInfo": "Indie Developer and designer living in Varna, Bulgaria",
+      "date": "2026-06-10",
+      "intro": "By day, Ivan Nedyalkov is an Operations Product Manager at a large online retail company. On the side, he is an indie developer and designer. He's currently working on Velosity, an iOS app for space enthusiasts that provides detailed tracking of ongoing and upcoming space launch operations.",
+      "postLinks": [
+        { "label": "Posts", "url": "https://velosity.space/" },
+        { "label": "Threads", "url": "https://www.threads.net/@velosityapp" }
+      ],
+      "images": [
+        "/placeholder-image-1.jpg",
+        "/placeholder-image-2.jpg",
+        "/placeholder-image-3.jpg",
+        "/placeholder-image-4.jpg",
+        "/placeholder-image-5.jpg"
+      ],
+      "workspaceItems": [
+        "Mac Mini",
+        "27\" BenQ monitor",
+        "Arctic Fox cherry monitor arm",
+        "Logitech MX Master 3",
+        "Logitech MX Keys Mini",
+        "Nonda leather mousepad",
+        "iPhone 11 (for testing purposes)",
+        "HomePod mini"
+      ],
+      "tools": [
+        "Xcode",
+        "Figma",
+        "Affinity Designer",
+        "Apple Notes",
+        "Safari",
+        "Raycast",
+        "Perplexity AI",
+        "Claude"
+      ],
+      "qa": {
+        "usefulItem": "It's got to be the Logitech MX Master 3 mouse. I've been using it for both work and personal stuff for about 2 years now. It sure needs an upgrade.",
+        "inspiration": "By looking around and noticing things that annoy me or don't work well, whether it's something as basic as keyboard shortcuts or poorly designed notifications. Each frustrating thing I see becomes motivation for me to come up with a better solution or fix or improve it. The most inspiring things catch my attention—their quality and user experience push me to explore new ideas and designs. Actually, my job is my biggest source of inspiration because it exposes me to a wide range of problems and challenges that keep me thinking creatively.",
+        "biggestChallenge": "While the app's development has been smooth, scaling it to serve a growing user base has been a significant challenge for me. Making sure the backend infrastructure can handle increased demand has required careful planning, setting up servers to handle more traffic, and optimizing database queries."
+      },
+      "relatedPosts": [
+        {
+          "title": "Functional & Aesthetic Workspace",
+          "subtitle": "Designer from Brooklyn, New York",
+          "imageUrl": "/placeholder-related-1.jpg",
+          "slug": "functional-aesthetic"
+        },
+        {
+          "title": "Minimalist Desk Setup",
+          "subtitle": "Developer from San Francisco, CA",
+          "imageUrl": "/placeholder-related-2.jpg",
+          "slug": "minimalist-desk"
+        },
+        {
+          "title": "Creative Studio Tour",
+          "subtitle": "Content Creator from London, UK",
+          "imageUrl": "/placeholder-related-3.jpg",
+          "slug": "creative-studio"
+        }
+      ]
+    }
+  ]
+}
