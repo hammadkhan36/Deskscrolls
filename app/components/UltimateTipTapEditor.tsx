@@ -376,6 +376,7 @@ export default function UltimateTipTapEditor({
       TextStyle,
       FontFamily,
       Color,
+      Youtube,// 👈 yeh line add karo   error fix ka lia 
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Highlight.configure({ multicolor: true }),
       Link.configure({
