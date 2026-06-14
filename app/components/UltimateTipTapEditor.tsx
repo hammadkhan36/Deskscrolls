@@ -611,7 +611,7 @@ export default function UltimateTipTapEditor({
           onClick={() => {
             const url = window.prompt('Enter YouTube URL:')
             if (url) {
-              editor.chain().focus().setYoutube({ src: url }).run()
+              editor.chain().focus().insertContent({ type: 'youtube', attrs: { src: url } }).run()
             }
           }}
           className="px-2 py-0.5 rounded hover:bg-gray-100"
