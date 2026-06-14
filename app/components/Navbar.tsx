@@ -91,6 +91,15 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { Lora } from 'next/font/google';
+
+// Lora font for italic "Scrolls" — exactly like the original inline style
+const lora = Lora({
+  subsets: ['latin'],
+  // style: ['italic'],
+  weight: ['400'], // normal italic weight
+  variable: '--font-lora',
+});
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -124,6 +133,21 @@ export default function Navbar() {
   return (
     <nav className="flex items-center justify-between px-4 py-3 md:px-8 bg-white border-b border-gray-100 relative">
       {/* Logo - links to home */}
+
+       <div
+        className="nav-logo font-sans text-base font-medium tracking-[-0.3px] text-gray-900 flex items-center justify-center flex-wrap gap-0 cursor-pointer"
+        // onClick={showBrandToast}
+        title="DeskScrolls — artisanal brand identity"
+      >
+        <span className="inline-block">Desk</span>
+        {/* Bronze + Lora italic span — replaces original <em> style */}
+        <span
+          className={`${lora.className} italic text-[#b87333] inline-block`}
+        >
+          Scrolls
+        </span>
+      </div>
+  
       <Link href="/" className="flex items-center cursor-pointer">
         <div className="border-2 border-green-500 rounded-md px-2 py-0.5 text-green-500 font-bold text-2xl shadow-[2px_4px_0px_rgba(34,197,94,0.3)]">
           D
@@ -243,3 +267,11 @@ export default function Navbar() {
     </nav>
   )
 }
+
+
+
+
+
+
+
+
