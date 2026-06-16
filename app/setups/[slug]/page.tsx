@@ -208,6 +208,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerSupabase } from '@/lib/supabase/server'
+import EmbedRenderer from '@/components/EmbedRenderer'
 
 export const dynamic = 'force-dynamic'
 
@@ -290,7 +291,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
           {/* ── Main content card ── */}
           <div className="bg-white border border-[#E6E1D8] rounded-xl p-6 sm:p-8 mb-10 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
-            {setup.content && (
+            {/* {setup.content && (
               <div
                 className="prose prose-neutral max-w-none text-[#1E1E1E]
                   prose-headings:font-bold prose-headings:text-[#1E1E1E]
@@ -298,7 +299,21 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                   prose-blockquote:border-l-[#D97742] prose-blockquote:text-[#6B6B6B]"
                 dangerouslySetInnerHTML={{ __html: setup.content }}
               />
-            )}
+            )} */}
+
+
+            {setup.content && (
+              // <div style={{ maxWidth: '540px', margin: '0 auto' }}>
+  <div
+  
+    className="prose prose-neutral max-w-none text-[#1E1E1E]
+      prose-headings:font-bold prose-headings:text-[#1E1E1E]
+      prose-a:text-[#D97742] hover:prose-a:text-[#B85C2E]
+      prose-blockquote:border-l-[#D97742] prose-blockquote:text-[#6B6B6B]"
+  >
+    <EmbedRenderer content={setup.content} />
+  </div>
+)}
 
             {/* Gallery */}
             {galleryImages.length > 0 && (

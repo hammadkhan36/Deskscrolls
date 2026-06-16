@@ -352,6 +352,9 @@ import { common, createLowlight } from 'lowlight'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 
+import { EmbedExtension } from '@/../extensions/EmbedExtension'  // 👈 add this
+
+
 import { uploadImage } from '@/lib/utils/supabase-uploads' // <-- Yeh import add karo
 
 const lowlight = createLowlight(common)
@@ -402,6 +405,7 @@ export default function UltimateTipTapEditor({
       CharacterCount.configure({ limit: 20000 }),
       Focus,
       Typography,
+      EmbedExtension, // 👈 yeh line add karo
       Youtube.configure({
         width: 100,
         height: 400,
@@ -619,6 +623,40 @@ export default function UltimateTipTapEditor({
           ▶
         </button>
 
+
+        {/* YouTube button ke baad yahan add karein */}
+<button
+  type="button" 
+  onClick={() => {
+    const url = window.prompt('Paste Embed URL (Twitter, Instagram, YouTube, Reddit, etc.)')
+    if (!url) return
+    let provider: 'other' | 'twitter' | 'instagram' | 'youtube' | 'reddit' | 'tiktok' | 'spotify' = 'other'
+    try {
+      const hostname = new URL(url).hostname
+      if (hostname.includes('twitter.com') || hostname.includes('x.com')) provider = 'twitter'
+      else if (hostname.includes('instagram.com')) provider = 'instagram'
+      else if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) provider = 'youtube'
+      else if (hostname.includes('reddit.com')) provider = 'reddit'
+      else if (hostname.includes('tiktok.com')) provider = 'tiktok'
+      else if (hostname.includes('open.spotify.com')) provider = 'spotify'
+    } catch {}
+    editor.chain().focus().setEmbed({ url, provider }).run()
+
+//     editor.chain().focus().insertContent({
+//   type: 'embed',
+//   attrs: { url, provider }
+// }).run()
+
+     // 👇 Debug line – yahan laga kar browser console dekh sakte hain
+    const chain = editor.chain().focus()
+    console.log('Available commands:', chain)
+  }}
+  className="px-2 py-0.5 rounded hover:bg-gray-100 text-sm"
+  title="Embed Tweet/Post"
+>
+  🧩
+</button>
+
         <button
           onClick={() => editor.chain().focus().toggleTaskList().run()}
           className={`px-2 py-0.5 rounded ${editor.isActive('taskList') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
@@ -766,6 +804,35 @@ export default function UltimateTipTapEditor({
           >
             Table
           </button>
+
+
+          {/* Embed Code Button */}
+          {/* <button
+  onClick={() => {
+    const code = window.prompt('Paste embed code (e.g., <iframe>...</iframe>):')
+    if (code) {
+      // Extract iframe src for height detection (optional)
+      const srcMatch = code.match(/src=["']([^"']*)["']/)
+      let wrapperClass = 'embed-responsive'
+      if (srcMatch) {
+        const src = srcMatch[1].toLowerCase()
+        if (src.includes('instagram.com')) {
+          wrapperClass += ' ratio-4-5'
+        } else if (src.includes('spotify.com') && src.includes('/episode/')) {
+          wrapperClass = 'embed-responsive' // 16:9 ok
+        }
+        // add more platform detection if needed
+      }
+      const wrapped = `<div class="${wrapperClass}">${code}</div>`
+      editor?.chain().focus().insertContent(wrapped).run()
+    }
+  }}
+  className="px-2 py-0.5 rounded hover:bg-gray-100"
+  title="Insert Embed Code"
+>
+  ww📺
+</button> */}
+
         </div>
       </FloatingMenu>
 

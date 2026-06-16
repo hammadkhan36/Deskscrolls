@@ -40,6 +40,10 @@ export default function EditSetup() {
   const [error, setError] = useState('')
   const [fetching, setFetching] = useState(true) // while we load setup
 
+  const [saved, setSaved] = useState(false)
+
+
+
   // Fetch categories
   useEffect(() => {
     supabase
@@ -155,6 +159,12 @@ export default function EditSetup() {
       }
 
       router.push('/admin') // back to dashboard
+
+      // success
+setSaved(true)
+setError('')
+setLoading(false)
+
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -174,6 +184,11 @@ export default function EditSetup() {
     <div className="max-w-lg mx-auto p-4 sm:p-6">
       <h1 className="text-2xl font-bold mb-6">Edit Desk Setup</h1>
       {error && <div className="bg-red-100 text-red-700 p-2 rounded mb-4">{error}</div>}
+{saved && (
+  <div className="bg-green-100 text-green-800 p-2 rounded mb-4">
+    Setup updated successfully! You can continue editing.
+  </div>
+)}
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <input
