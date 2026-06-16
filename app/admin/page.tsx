@@ -43,8 +43,6 @@
 
 
 
-
-
 import { createServerSupabase } from '@/lib/supabase/server'
 import Link from 'next/link'
 import AdminTable from './AdminTable'
@@ -52,11 +50,27 @@ import AdminTable from './AdminTable'
 export default async function AdminDashboard() {
   const supabase = await createServerSupabase()
 
-  // Fetch more fields for better admin view
-  const { data: setups } = await supabase
+  const { data: setups, error } = await supabase
     .from('setups')
-    .select('id, title, slug, owner_name, published, category:categories(name), author:profiles(full_name), created_at, updated_at')
+    .select(`
+      id,
+      title,
+      slug,
+      owner_name,
+      published,
+      created_at,
+      updated_at,
+      author:profiles(full_name),
+      categories:setup_categories (
+        category:categories(name)
+      )
+    `)
     .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Admin fetch error:', error)
+    return <div className="p-10 text-red-600">Failed to load setups.</div>
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-6">

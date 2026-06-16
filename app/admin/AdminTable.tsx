@@ -10,8 +10,9 @@ type Setup = {
   slug: string
   owner_name: string
   published: boolean
-  category: { name: string } | null
+//   category: { name: string } | null
   author: { full_name: string } | null
+    categories: { category: { name: string } }[] | null   // <-- change
   created_at: string
   updated_at: string
 }
@@ -62,9 +63,15 @@ export default function AdminTable({ setups }: { setups: Setup[] }) {
               <td className="px-4 py-3 text-sm text-gray-700">
                 {setup.author?.full_name || setup.owner_name}
               </td>
-              <td className="px-4 py-3 text-sm text-gray-500">
+              {/* <td className="px-4 py-3 text-sm text-gray-500">
                 {setup.category?.name || '—'}
-              </td>
+              </td> */}
+              <td className="px-4 py-3 text-sm text-gray-500">
+  {setup.categories && setup.categories.length > 0
+    ? setup.categories.map(c => c.category.name).join(', ')
+    : '—'
+  }
+</td>
               <td className="px-4 py-3">
                 <button
                   onClick={() => handleToggle(setup.id, setup.published)}

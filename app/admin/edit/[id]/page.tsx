@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter, useParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { uploadImage } from '@/lib/utils/supabase-uploads'
+import CategoryMultiSelect from '@/components/CategoryMultiSelect'
 
 // Dynamically import editor (same as new page)
 const UltimateTipTapEditor = dynamic(() => import('@/components/UltimateTipTapEditor'), {
@@ -25,7 +26,8 @@ export default function EditSetup() {
   const [ownerName, setOwnerName] = useState('')
   const [shortIntro, setShortIntro] = useState('')
   const [content, setContent] = useState('')
-  const [categoryId, setCategoryId] = useState('')
+  // const [categoryId, setCategoryId] = useState('')
+   const [categoryIds, setCategoryIds] = useState<string[]>([])  // change
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
   const [published, setPublished] = useState(false)
 
@@ -74,7 +76,10 @@ export default function EditSetup() {
       setOwnerName(setup.owner_name)
       setShortIntro(setup.short_intro || '')
       setContent(setup.content || '')
-      setCategoryId(setup.category_id || '')
+      // setCategoryId(setup.category_id || '')
+       const fetchedCategoryIds = (setup.setup_categories || []).map((sc: any) => sc.category_id)
+      setCategoryIds(fetchedCategoryIds)
+
       setPublished(setup.published)
       setExistingCoverUrl(setup.cover_image_url)
       setExistingGalleryImages(
@@ -130,7 +135,7 @@ export default function EditSetup() {
           owner_name: ownerName,
           short_intro: shortIntro,
           content,
-          category_id: categoryId || null,
+          // category_id: categoryId || null,
           cover_image_url: coverImageUrl,
           published,
           updated_at: new Date().toISOString(),
@@ -138,6 +143,19 @@ export default function EditSetup() {
         .eq('id', setupId)
 
       if (updateError) throw updateError
+
+
+       // Sync categories: delete all existing, then insert new
+      await supabase.from('setup_categories').delete().eq('setup_id', setupId)
+      if (categoryIds.length > 0) {
+        const rows = categoryIds.map(catId => ({
+          setup_id: setupId,
+          category_id: catId,
+        }))
+        const { error: catError } = await supabase.from('setup_categories').insert(rows)
+        if (catError) throw catError
+      }
+
 
       // Upload new gallery images (if any)
       if (galleryFiles.length > 0) {
@@ -222,7 +240,16 @@ setLoading(false)
           className="w-full border p-3 rounded-lg text-base"
         />
 
-        <select
+
+<div>
+        <label className="block text-sm font-medium mb-1">Categories</label>
+        <CategoryMultiSelect
+          categories={categories}
+          selectedIds={categoryIds}
+          onChange={setCategoryIds}
+        />
+      </div>
+        {/* <select
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
           className="w-full border p-3 rounded-lg text-base bg-white"
@@ -233,7 +260,7 @@ setLoading(false)
               {cat.name}
             </option>
           ))}
-        </select>
+        </select> */}
 
         {/* Published toggle */}
         <label className="flex items-center space-x-2">

@@ -216,17 +216,30 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const supabase = await createServerSupabase()
 
+
   const { data: setup, error } = await supabase
-    .from('setups')
-    .select(`
-      *,
-      category:categories(name, slug),
-      author:profiles(full_name, avatar_url),
-      setup_images(id, image_url, alt_text, sort_order)
-    `)
-    .eq('slug', slug)
-    .eq('published', true)
-    .single()
+  .from('setups')
+  .select(`
+    *,
+    categories:setup_categories(category:categories(id, name, slug)),
+    author:profiles(full_name, avatar_url),
+    setup_images(id, image_url, alt_text, sort_order)
+  `)
+  .eq('slug', slug)
+  .eq('published', true)
+  .single()
+
+  // const { data: setup, error } = await supabase
+  //   .from('setups')
+  //   .select(`
+  //     *,
+  //     category:categories(name, slug),
+  //     author:profiles(full_name, avatar_url),
+  //     setup_images(id, image_url, alt_text, sort_order)
+  //   `)
+  //   .eq('slug', slug)
+  //   .eq('published', true)
+  //   .single()
 
   if (error || !setup) notFound()
 
@@ -253,8 +266,31 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       >
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
 
+
+
+{/* Breadcrumb ... */}
+<nav className="flex items-center gap-2 text-[13px] text-[#6B6B6B] mb-6">
+  <Link href="/" className="hover:text-[#D97742] transition-colors">Home</Link>
+  <span>/</span>
+  <Link href="/setups" className="hover:text-[#D97742] transition-colors">Setups</Link>
+  {/* Agar multiple categories hain to yahan sab dikhao */}
+  {setup.categories && setup.categories.length > 0 && (
+    <>
+      <span>/</span>
+      {setup.categories.map((cat: any) => (
+        <Link
+          key={cat.category.id}
+          href={`/setups?category=${cat.category.slug}`}
+          className="hover:text-[#D97742] transition-colors text-[#6B6B6B]"
+        >
+          {cat.category.name}
+        </Link>
+      ))}
+    </>
+  )}
+</nav>
           {/* ── Breadcrumb ── */}
-          <nav className="flex items-center gap-2 text-[13px] text-[#6B6B6B] mb-6">
+          {/* <nav className="flex items-center gap-2 text-[13px] text-[#6B6B6B] mb-6">
             <Link href="/" className="hover:text-[#D97742] transition-colors">Home</Link>
             <span>/</span>
             <Link href="/setups" className="hover:text-[#D97742] transition-colors">Setups</Link>
@@ -269,7 +305,21 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 </Link>
               </>
             )}
-          </nav>
+          </nav> */}
+{setup.categories && setup.categories.length > 0 && (
+  <div className="flex gap-2 mt-2">
+    {setup.categories.map((cat: any) => (
+      <Link
+        key={cat.category.id}
+        href={`/setups?category=${cat.category.slug}`}
+        className="text-xs font-semibold uppercase tracking-wider text-[#D97742] hover:text-[#B85C2E] transition-colors"
+      >
+        {cat.category.name}
+      </Link>
+    ))}
+  </div>
+)}
+
 
           {/* ── Title block ── */}
           <div className="mb-8 pb-6 border-b border-[#E6E1D8]">

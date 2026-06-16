@@ -373,6 +373,9 @@ import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { uploadImage } from '@/lib/utils/supabase-uploads'
 
+import CategoryMultiSelect from '@/components/CategoryMultiSelect'
+
+
 // Dynamically import editor to avoid SSR issues with browser APIs
 const UltimateTipTapEditor = dynamic(() => import('@/components/UltimateTipTapEditor'), {
   ssr: false,
@@ -388,7 +391,8 @@ export default function NewSetup() {
   const [ownerName, setOwnerName] = useState('')
   const [shortIntro, setShortIntro] = useState('')
   const [content, setContent] = useState('')
-  const [categoryId, setCategoryId] = useState('')
+  // const [categoryId, setCategoryId] = useState('')
+  const [categoryIds, setCategoryIds] = useState<string[]>([])  // <-- change
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
 
   const [coverFile, setCoverFile] = useState<File | null>(null)
@@ -438,7 +442,7 @@ export default function NewSetup() {
           owner_name: ownerName,
           short_intro: shortIntro,
           content,
-          category_id: categoryId || null,
+          // category_id: categoryId || null,
           cover_image_url: coverImageUrl,
           published: false,
           author_id: user.id,
@@ -447,6 +451,18 @@ export default function NewSetup() {
         .single()
 
       if (insertError) throw insertError
+
+
+       // Insert multiple categories
+      if (setup && categoryIds.length > 0) {
+        const rows = categoryIds.map(catId => ({
+          setup_id: setup.id,
+          category_id: catId,
+        }))
+        const { error: catError } = await supabase.from('setup_categories').insert(rows)
+        if (catError) throw catError
+      }
+
 
       // Upload gallery images
       if (setup && galleryFiles.length > 0) {
@@ -505,7 +521,7 @@ export default function NewSetup() {
           className="w-full border p-3 rounded-lg text-base"
         />
 
-        <select
+        {/* <select
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
           className="w-full border p-3 rounded-lg text-base bg-white"
@@ -516,8 +532,18 @@ export default function NewSetup() {
               {cat.name}
             </option>
           ))}
-        </select>
+        </select> */}
+<div>
+        <label className="block text-sm font-medium mb-1">Categories</label>
+        <CategoryMultiSelect
+          categories={categories}
+          selectedIds={categoryIds}
+          onChange={setCategoryIds}
+        />
+      </div>
 
+
+      
         <div>
           <label className="block text-sm font-medium mb-1">Cover Image</label>
           <input
