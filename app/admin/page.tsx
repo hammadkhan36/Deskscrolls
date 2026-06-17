@@ -131,16 +131,19 @@ export default async function AdminDashboard() {
     return <div className="p-10 text-red-600">Failed to load setups.</div>
   }
 
-  // Transform data to match AdminTable expected shape
-  const safeSetups = setups?.map((setup: any) => ({
+  // ---------- Data transformation (fix) ----------
+  const safeSetups = (setups ?? []).map((setup: any) => ({
     ...setup,
-    // author array se pehla element le lo (agar hai to), nahi to null/undefined
+    // author ko array se single object mein convert karo
     author: Array.isArray(setup.author) ? setup.author[0] ?? null : setup.author,
-    // categories ko flatten kar ke sirf category names ki array bana do
+    // categories ko simple string array banao
     categories: Array.isArray(setup.categories)
-      ? setup.categories.map((sc: any) => sc.category?.name).filter(Boolean)
+      ? setup.categories
+          .map((sc: any) => sc.category?.name)
+          .filter(Boolean)
       : [],
-  })) ?? []
+  }))
+  // -----------------------------------------------
 
   return (
     <div className="max-w-6xl mx-auto p-6">
