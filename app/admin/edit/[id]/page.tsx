@@ -209,7 +209,7 @@ export default function EditSetup() {
   }
 
   return (
-    <div className="max-w-lg mx-auto p-4 sm:p-6">
+    <div className="max-w-4xl mx-auto p-4 sm:p-6">
       <h1 className="text-2xl font-bold mb-6">Edit Desk Setup</h1>
       {error && <div className="bg-red-100 text-red-700 p-2 rounded mb-4">{error}</div>}
       {saved && (

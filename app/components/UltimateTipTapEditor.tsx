@@ -317,7 +317,244 @@
 
 
 
+// {/* Toolbar */}
+//       <div className="sticky top-0 z-10 bg-white text-gray-700 border-b border-gray-200 p-1.5 flex flex-wrap items-center gap-1 shadow-sm">
+//         {/* Undo/Redo */}
+//         <button onClick={() => editor.chain().focus().undo().run()} className="p-1.5 hover:bg-gray-100 rounded-md">
+//           ↩
+//         </button>
+//         <button onClick={() => editor.chain().focus().redo().run()} className="p-1.5 hover:bg-gray-100 rounded-md">
+//           ↪
+//         </button>
+//         <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
 
+//         {/* Headings */}
+//         <button
+//           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+//           className={`px-2 py-0.5 text-sm font-bold rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-200' : 'hover:bg-gray-100'
+//             }`}
+//         >
+//           H1
+//         </button>
+//         <button
+//           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+//           className={`px-2 py-0.5 text-sm font-bold rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : 'hover:bg-gray-100'
+//             }`}
+//         >
+//           H2
+//         </button>
+//         <button
+//           onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+//           className={`px-2 py-0.5 text-sm font-bold rounded ${editor.isActive('heading', { level: 3 }) ? 'bg-gray-200' : 'hover:bg-gray-100'
+//             }`}
+//         >
+//           H3
+//         </button>
+//         <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
+
+//         {/* Formatting */}
+//         <button
+//           onClick={() => editor.chain().focus().toggleBold().run()}
+//           className={`px-2 py-0.5 font-bold rounded ${editor.isActive('bold') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           B
+//         </button>
+//         <button
+//           onClick={() => editor.chain().focus().toggleItalic().run()}
+//           className={`px-2 py-0.5 italic rounded ${editor.isActive('italic') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           I
+//         </button>
+//         <button
+//           onClick={() => editor.chain().focus().toggleUnderline().run()}
+//           className={`px-2 py-0.5 underline rounded ${editor.isActive('underline') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           U
+//         </button>
+//         <button
+//           onClick={() => editor.chain().focus().toggleStrike().run()}
+//           className={`px-2 py-0.5 line-through rounded ${editor.isActive('strike') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           S
+//         </button>
+//         <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
+
+//         {/* Alignment */}
+//         <button
+//           onClick={() => editor.chain().focus().setTextAlign('left').run()}
+//           className={`px-2 py-0.5 rounded ${editor.isActive({ textAlign: 'left' }) ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           ←
+//         </button>
+//         <button
+//           onClick={() => editor.chain().focus().setTextAlign('center').run()}
+//           className={`px-2 py-0.5 rounded ${editor.isActive({ textAlign: 'center' }) ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           ↔
+//         </button>
+//         <button
+//           onClick={() => editor.chain().focus().setTextAlign('right').run()}
+//           className={`px-2 py-0.5 rounded ${editor.isActive({ textAlign: 'right' }) ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           →
+//         </button>
+//         <button
+//           onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+//           className={`px-2 py-0.5 rounded ${editor.isActive({ textAlign: 'justify' }) ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           ☰
+//         </button>
+//         <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
+
+//         {/* Lists */}
+//         <button
+//           onClick={() => editor.chain().focus().toggleBulletList().run()}
+//           className={`px-2 py-0.5 rounded ${editor.isActive('bulletList') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           •
+//         </button>
+//         <button
+//           onClick={() => editor.chain().focus().toggleOrderedList().run()}
+//           className={`px-2 py-0.5 rounded ${editor.isActive('orderedList') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           1.
+//         </button>
+//         <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
+
+//         {/* Insert */}
+//         <button
+//           onClick={() => editor.chain().focus().toggleBlockquote().run()}
+//           className={`px-2 py-0.5 rounded ${editor.isActive('blockquote') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           ❝
+//         </button>
+//         <button
+//           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+//           className={`px-2 py-0.5 rounded ${editor.isActive('codeBlock') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           &lt;/&gt;
+//         </button>
+//         {/* UPDATED IMAGE BUTTON */}
+//         <button
+//           onClick={handleImageUpload}
+//           disabled={uploading}
+//           className="px-2 py-0.5 rounded hover:bg-gray-100 disabled:opacity-50"
+//         >
+//           {uploading ? '⏳' : '🖼'}
+//         </button>
+//         <button
+//           onClick={() => editor.chain().focus().setHorizontalRule().run()}
+//           className="px-2 py-0.5 rounded hover:bg-gray-100"
+//         >
+//           ─
+//         </button>
+//         <button
+//           onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()}
+//           className="px-2 py-0.5 rounded hover:bg-gray-100"
+//         >
+//           📊
+//         </button>
+
+//         {/* YouTube */}
+//         <button
+//           onClick={() => {
+//             const url = window.prompt('Enter YouTube URL:')
+//             if (url) {
+//               editor.chain().focus().insertContent({ type: 'youtube', attrs: { src: url } }).run()
+//             }
+//           }}
+//           className="px-2 py-0.5 rounded hover:bg-gray-100"
+//         >
+//           ▶
+//         </button>
+
+
+//         {/* YouTube button ke baad yahan add karein */}
+// <button
+//   type="button" 
+//   onClick={() => {
+//     const url = window.prompt('Paste Embed URL (Twitter, Instagram, YouTube, Reddit, etc.)')
+//     if (!url) return
+//     let provider: 'other' | 'twitter' | 'instagram' | 'youtube' | 'reddit' | 'tiktok' | 'spotify' = 'other'
+//     try {
+//       const hostname = new URL(url).hostname
+//       if (hostname.includes('twitter.com') || hostname.includes('x.com')) provider = 'twitter'
+//       else if (hostname.includes('instagram.com')) provider = 'instagram'
+//       else if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) provider = 'youtube'
+//       else if (hostname.includes('reddit.com')) provider = 'reddit'
+//       else if (hostname.includes('tiktok.com')) provider = 'tiktok'
+//       else if (hostname.includes('open.spotify.com')) provider = 'spotify'
+//     } catch {}
+//     editor.chain().focus().setEmbed({ url, provider }).run()
+
+// //     editor.chain().focus().insertContent({
+// //   type: 'embed',
+// //   attrs: { url, provider }
+// // }).run()
+
+//      // 👇 Debug line – yahan laga kar browser console dekh sakte hain
+//     const chain = editor.chain().focus()
+//     console.log('Available commands:', chain)
+//   }}
+//   className="px-2 py-0.5 rounded hover:bg-gray-100 text-sm"
+//   title="Embed Tweet/Post"
+// >
+//   🧩
+// </button>
+
+//         <button
+//           onClick={() => editor.chain().focus().toggleTaskList().run()}
+//           className={`px-2 py-0.5 rounded ${editor.isActive('taskList') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           ☑
+//         </button>
+//         <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
+
+//         {/* Colors */}
+//         <input
+//           type="color"
+//           onInput={(e) => editor.chain().focus().setColor(e.currentTarget.value).run()}
+//           className="w-6 h-6 cursor-pointer p-0 border-0 rounded"
+//         />
+//         <button
+//           onClick={() => editor.chain().focus().unsetColor().run()}
+//           className="px-1.5 py-0.5 text-xs rounded hover:bg-gray-100"
+//         >
+//           ✕
+//         </button>
+//         <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
+
+//         {/* Font Family */}
+//         <select
+//           onChange={(e) => editor.chain().focus().setFontFamily(e.target.value).run()}
+//           className="text-sm py-0.5 px-2 border border-gray-200 rounded bg-white focus:outline-none"
+//         >
+//           <option value="">Font</option>
+//           <option value="Arial, sans-serif">Arial</option>
+//           <option value="Georgia, serif">Georgia</option>
+//           <option value="Courier New, monospace">Courier</option>
+//         </select>
+//         <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
+
+//         {/* Links */}
+//         <button
+//           onClick={() => {
+//             const url = window.prompt('Enter URL:')
+//             if (url) editor.chain().focus().setLink({ href: url }).run()
+//           }}
+//           className={`px-2 py-0.5 rounded ${editor.isActive('link') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+//         >
+//           🔗
+//         </button>
+
+//         {/* Fullscreen */}
+//         <button onClick={() => setIsFullscreen(!isFullscreen)} className="px-2 py-0.5 rounded hover:bg-gray-100 ml-auto">
+//           {isFullscreen ? '⛶' : '⛶'}
+//         </button>
+
+//         {/* Word Count */}
+//         <div className="text-xs text-gray-500 ml-auto hidden sm:block">{wordCount} words</div>
+//       </div>
 
 
 
@@ -351,6 +588,12 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { common, createLowlight } from 'lowlight'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
+import {
+  Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, 
+  AlignRight, AlignJustify, List, ListOrdered, Quote, Code2, 
+  ImageIcon, Minus, Table2,  Link2, Heading1, Heading2, 
+  Heading3, Undo2, Redo2, Palette, X, ChevronDown, Type, Maximize2, CheckSquare,
+} from 'lucide-react'
 
 import { EmbedExtension } from '@/../extensions/EmbedExtension'  // 👈 add this
 
@@ -473,243 +716,176 @@ export default function UltimateTipTapEditor({
         }`}
     >
       {/* Toolbar */}
-      <div className="sticky top-0 z-10 bg-white text-gray-700 border-b border-gray-200 p-1.5 flex flex-wrap items-center gap-1 shadow-sm">
-        {/* Undo/Redo */}
-        <button onClick={() => editor.chain().focus().undo().run()} className="p-1.5 hover:bg-gray-100 rounded-md">
-          ↩
-        </button>
-        <button onClick={() => editor.chain().focus().redo().run()} className="p-1.5 hover:bg-gray-100 rounded-md">
-          ↪
-        </button>
-        <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
+      {/* Toolbar */}
+<div className="sticky top-0 z-10 bg-white text-gray-700 border-b border-gray-200 p-1.5 flex flex-nowrap items-center gap-0.5 shadow-sm overflow-x-auto">
+  {/* History */}
+  <button onClick={() => editor.chain().focus().undo().run()} className="p-1.5 hover:bg-gray-100 rounded-md" title="Undo">
+    <Undo2 size={16} />
+  </button>
+  <button onClick={() => editor.chain().focus().redo().run()} className="p-1.5 hover:bg-gray-100 rounded-md" title="Redo">
+    <Redo2 size={16} />
+  </button>
+  <div className="w-px h-5 bg-gray-200 mx-1" />
 
-        {/* Headings */}
-        <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          className={`px-2 py-0.5 text-sm font-bold rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-200' : 'hover:bg-gray-100'
-            }`}
-        >
-          H1
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={`px-2 py-0.5 text-sm font-bold rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : 'hover:bg-gray-100'
-            }`}
-        >
-          H2
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          className={`px-2 py-0.5 text-sm font-bold rounded ${editor.isActive('heading', { level: 3 }) ? 'bg-gray-200' : 'hover:bg-gray-100'
-            }`}
-        >
-          H3
-        </button>
-        <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
+  {/* Headings dropdown */}
+  <select
+    onChange={(e) => {
+      const val = e.target.value;
+      if (val === 'p') editor.chain().focus().setParagraph().run();
+      else editor.chain().focus().toggleHeading({ level: parseInt(val) as any }).run();
+    }}
+    value={
+      editor.isActive('heading', { level: 1 }) ? '1' :
+      editor.isActive('heading', { level: 2 }) ? '2' :
+      editor.isActive('heading', { level: 3 }) ? '3' : 'p'
+    }
+    className="text-sm bg-transparent border border-gray-200 rounded px-2 py-1 focus:outline-none cursor-pointer hover:bg-gray-50"
+    title="Heading style"
+  >
+    <option value="p">¶ Paragraph</option>
+    <option value="1">H1</option>
+    <option value="2">H2</option>
+    <option value="3">H3</option>
+  </select>
+  <div className="w-px h-5 bg-gray-200 mx-1" />
 
-        {/* Formatting */}
-        <button
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`px-2 py-0.5 font-bold rounded ${editor.isActive('bold') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          B
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`px-2 py-0.5 italic rounded ${editor.isActive('italic') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          I
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className={`px-2 py-0.5 underline rounded ${editor.isActive('underline') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          U
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-          className={`px-2 py-0.5 line-through rounded ${editor.isActive('strike') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          S
-        </button>
-        <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
+  {/* Formatting */}
+  <div className="flex gap-0.5 items-center">
+    <button onClick={() => editor.chain().focus().toggleBold().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('bold') ? 'bg-gray-200 text-gray-900' : 'text-gray-600'}`} title="Bold (Ctrl+B)">
+      <Bold size={16} />
+    </button>
+    <button onClick={() => editor.chain().focus().toggleItalic().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('italic') ? 'bg-gray-200 text-gray-900' : 'text-gray-600'}`} title="Italic (Ctrl+I)">
+      <Italic size={16} />
+    </button>
+    <button onClick={() => editor.chain().focus().toggleUnderline().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('underline') ? 'bg-gray-200 text-gray-900' : 'text-gray-600'}`} title="Underline (Ctrl+U)">
+      <Underline size={16} />
+    </button>
+    <button onClick={() => editor.chain().focus().toggleStrike().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('strike') ? 'bg-gray-200 text-gray-900' : 'text-gray-600'}`} title="Strikethrough">
+      <Strikethrough size={16} />
+    </button>
+  </div>
+  <div className="w-px h-5 bg-gray-200 mx-1" />
 
-        {/* Alignment */}
-        <button
-          onClick={() => editor.chain().focus().setTextAlign('left').run()}
-          className={`px-2 py-0.5 rounded ${editor.isActive({ textAlign: 'left' }) ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          ←
-        </button>
-        <button
-          onClick={() => editor.chain().focus().setTextAlign('center').run()}
-          className={`px-2 py-0.5 rounded ${editor.isActive({ textAlign: 'center' }) ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          ↔
-        </button>
-        <button
-          onClick={() => editor.chain().focus().setTextAlign('right').run()}
-          className={`px-2 py-0.5 rounded ${editor.isActive({ textAlign: 'right' }) ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          →
-        </button>
-        <button
-          onClick={() => editor.chain().focus().setTextAlign('justify').run()}
-          className={`px-2 py-0.5 rounded ${editor.isActive({ textAlign: 'justify' }) ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          ☰
-        </button>
-        <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
+  {/* Alignment */}
+  <div className="flex gap-0.5">
+    <button onClick={() => editor.chain().focus().setTextAlign('left').run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'left' }) ? 'bg-gray-200' : 'text-gray-600'}`} title="Align left">
+      <AlignLeft size={16} />
+    </button>
+    <button onClick={() => editor.chain().focus().setTextAlign('center').run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'center' }) ? 'bg-gray-200' : 'text-gray-600'}`} title="Align center">
+      <AlignCenter size={16} />
+    </button>
+    <button onClick={() => editor.chain().focus().setTextAlign('right').run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'right' }) ? 'bg-gray-200' : 'text-gray-600'}`} title="Align right">
+      <AlignRight size={16} />
+    </button>
+    <button onClick={() => editor.chain().focus().setTextAlign('justify').run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'justify' }) ? 'bg-gray-200' : 'text-gray-600'}`} title="Justify">
+      <AlignJustify size={16} />
+    </button>
+  </div>
+  <div className="w-px h-5 bg-gray-200 mx-1" />
 
-        {/* Lists */}
-        <button
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`px-2 py-0.5 rounded ${editor.isActive('bulletList') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          •
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`px-2 py-0.5 rounded ${editor.isActive('orderedList') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          1.
-        </button>
-        <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
+  {/* Lists */}
+  <div className="flex gap-0.5">
+    <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('bulletList') ? 'bg-gray-200' : 'text-gray-600'}`} title="Bullet list">
+      <List size={16} />
+    </button>
+    <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('orderedList') ? 'bg-gray-200' : 'text-gray-600'}`} title="Ordered list">
+      <ListOrdered size={16} />
+    </button>
+  </div>
+  <div className="w-px h-5 bg-gray-200 mx-1" />
 
-        {/* Insert */}
-        <button
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={`px-2 py-0.5 rounded ${editor.isActive('blockquote') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          ❝
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          className={`px-2 py-0.5 rounded ${editor.isActive('codeBlock') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          &lt;/&gt;
-        </button>
-        {/* UPDATED IMAGE BUTTON */}
-        <button
-          onClick={handleImageUpload}
-          disabled={uploading}
-          className="px-2 py-0.5 rounded hover:bg-gray-100 disabled:opacity-50"
-        >
-          {uploading ? '⏳' : '🖼'}
-        </button>
-        <button
-          onClick={() => editor.chain().focus().setHorizontalRule().run()}
-          className="px-2 py-0.5 rounded hover:bg-gray-100"
-        >
-          ─
-        </button>
-        <button
-          onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()}
-          className="px-2 py-0.5 rounded hover:bg-gray-100"
-        >
-          📊
-        </button>
+  {/* Insert media / blocks */}
+  <div className="flex gap-0.5">
+    <button onClick={handleImageUpload} disabled={uploading} className="p-1.5 rounded hover:bg-gray-100 disabled:opacity-50 text-gray-600" title="Upload image">
+      {uploading ? <span className="text-xs">⏳</span> : <ImageIcon size={16} />}
+    </button>
+    <button onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Insert table">
+      <Table2 size={16} />
+    </button>
+    <button onClick={() => {
+      const url = window.prompt('Enter YouTube URL:');
+      if (url) editor.chain().focus().setYoutubeVideo({ src: url }).run();
+    }} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="YouTube video">
+      <Table2 size={16} /> {/* Youtube icon from lucide */}
+    </button>
+    <button onClick={() => {
+      const url = window.prompt('Paste Embed URL (Twitter, Instagram, etc.)');
+      if (!url) return;
+      let provider: 'other' | 'twitter' | 'instagram' | 'youtube' | 'reddit' | 'tiktok' | 'spotify' = 'other';
+      try {
+        const hostname = new URL(url).hostname;
+        if (hostname.includes('twitter.com') || hostname.includes('x.com')) provider = 'twitter';
+        else if (hostname.includes('instagram.com')) provider = 'instagram';
+        else if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) provider = 'youtube';
+        else if (hostname.includes('reddit.com')) provider = 'reddit';
+        else if (hostname.includes('tiktok.com')) provider = 'tiktok';
+        else if (hostname.includes('open.spotify.com')) provider = 'spotify';
+      } catch {}
+      editor.chain().focus().setEmbed({ url, provider }).run();
+    }} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Embed social post">
+      <Code2 size={16} /> {/* temporary embed icon, you can use Puzzle icon */}
+    </button>
+    <button onClick={() => editor.chain().focus().toggleBlockquote().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('blockquote') ? 'bg-gray-200' : 'text-gray-600'}`} title="Blockquote">
+      <Quote size={16} />
+    </button>
+    <button onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('codeBlock') ? 'bg-gray-200' : 'text-gray-600'}`} title="Code block">
+      <Code2 size={16} />
+    </button>
+    <button onClick={() => editor.chain().focus().setHorizontalRule().run()} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Horizontal rule">
+      <Minus size={16} />
+    </button>
+    <button onClick={() => editor.chain().focus().toggleTaskList().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('taskList') ? 'bg-gray-200' : 'text-gray-600'}`} title="Task list">
+      <CheckSquare size={16} /> {/* You need to import CheckSquare from lucide */}
+    </button>
+  </div>
+  <div className="w-px h-5 bg-gray-200 mx-1" />
 
-        {/* YouTube */}
-        <button
-          onClick={() => {
-            const url = window.prompt('Enter YouTube URL:')
-            if (url) {
-              editor.chain().focus().insertContent({ type: 'youtube', attrs: { src: url } }).run()
-            }
-          }}
-          className="px-2 py-0.5 rounded hover:bg-gray-100"
-        >
-          ▶
-        </button>
+  {/* Color picker */}
+  <div className="flex items-center gap-0.5">
+    <label title="Text color" className="cursor-pointer relative p-1.5 rounded hover:bg-gray-100 text-gray-600">
+      <Palette size={16} />
+      <input
+        type="color"
+        value={editor.getAttributes('textStyle').color || '#000000'}
+        onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
+        className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+      />
+    </label>
+    <button onClick={() => editor.chain().focus().unsetColor().run()} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Clear color">
+      <X size={16} />
+    </button>
+  </div>
+  <div className="w-px h-5 bg-gray-200 mx-1" />
 
+  {/* Font family */}
+  <select
+    onChange={(e) => editor.chain().focus().setFontFamily(e.target.value).run()}
+    className="text-sm bg-transparent border border-gray-200 rounded px-2 py-1 focus:outline-none cursor-pointer hover:bg-gray-50"
+    title="Font family"
+  >
+    <option value="">Font</option>
+    <option value="Arial, sans-serif">Arial</option>
+    <option value="Georgia, serif">Georgia</option>
+    <option value="Courier New, monospace">Courier</option>
+  </select>
+  <div className="w-px h-5 bg-gray-200 mx-1" />
 
-        {/* YouTube button ke baad yahan add karein */}
-<button
-  type="button" 
-  onClick={() => {
-    const url = window.prompt('Paste Embed URL (Twitter, Instagram, YouTube, Reddit, etc.)')
-    if (!url) return
-    let provider: 'other' | 'twitter' | 'instagram' | 'youtube' | 'reddit' | 'tiktok' | 'spotify' = 'other'
-    try {
-      const hostname = new URL(url).hostname
-      if (hostname.includes('twitter.com') || hostname.includes('x.com')) provider = 'twitter'
-      else if (hostname.includes('instagram.com')) provider = 'instagram'
-      else if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) provider = 'youtube'
-      else if (hostname.includes('reddit.com')) provider = 'reddit'
-      else if (hostname.includes('tiktok.com')) provider = 'tiktok'
-      else if (hostname.includes('open.spotify.com')) provider = 'spotify'
-    } catch {}
-    editor.chain().focus().setEmbed({ url, provider }).run()
+  {/* Link */}
+  <button onClick={() => {
+    const url = window.prompt('Enter URL:');
+    if (url) editor.chain().focus().setLink({ href: url }).run();
+  }} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('link') ? 'bg-gray-200' : 'text-gray-600'}`} title="Insert link">
+    <Link2 size={16} />
+  </button>
 
-//     editor.chain().focus().insertContent({
-//   type: 'embed',
-//   attrs: { url, provider }
-// }).run()
-
-     // 👇 Debug line – yahan laga kar browser console dekh sakte hain
-    const chain = editor.chain().focus()
-    console.log('Available commands:', chain)
-  }}
-  className="px-2 py-0.5 rounded hover:bg-gray-100 text-sm"
-  title="Embed Tweet/Post"
->
-  🧩
-</button>
-
-        <button
-          onClick={() => editor.chain().focus().toggleTaskList().run()}
-          className={`px-2 py-0.5 rounded ${editor.isActive('taskList') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          ☑
-        </button>
-        <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
-
-        {/* Colors */}
-        <input
-          type="color"
-          onInput={(e) => editor.chain().focus().setColor(e.currentTarget.value).run()}
-          className="w-6 h-6 cursor-pointer p-0 border-0 rounded"
-        />
-        <button
-          onClick={() => editor.chain().focus().unsetColor().run()}
-          className="px-1.5 py-0.5 text-xs rounded hover:bg-gray-100"
-        >
-          ✕
-        </button>
-        <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
-
-        {/* Font Family */}
-        <select
-          onChange={(e) => editor.chain().focus().setFontFamily(e.target.value).run()}
-          className="text-sm py-0.5 px-2 border border-gray-200 rounded bg-white focus:outline-none"
-        >
-          <option value="">Font</option>
-          <option value="Arial, sans-serif">Arial</option>
-          <option value="Georgia, serif">Georgia</option>
-          <option value="Courier New, monospace">Courier</option>
-        </select>
-        <div className="w-px h-5 bg-gray-300 mx-0.5"></div>
-
-        {/* Links */}
-        <button
-          onClick={() => {
-            const url = window.prompt('Enter URL:')
-            if (url) editor.chain().focus().setLink({ href: url }).run()
-          }}
-          className={`px-2 py-0.5 rounded ${editor.isActive('link') ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
-        >
-          🔗
-        </button>
-
-        {/* Fullscreen */}
-        <button onClick={() => setIsFullscreen(!isFullscreen)} className="px-2 py-0.5 rounded hover:bg-gray-100 ml-auto">
-          {isFullscreen ? '⛶' : '⛶'}
-        </button>
-
-        {/* Word Count */}
-        <div className="text-xs text-gray-500 ml-auto hidden sm:block">{wordCount} words</div>
-      </div>
+  {/* Fullscreen + word count (right side) */}
+  <div className="ml-auto flex items-center gap-1">
+    <button onClick={() => setIsFullscreen(!isFullscreen)} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Toggle fullscreen">
+      <Maximize2 size={16} /> {/* import Maximize2 from lucide */}
+    </button>
+    <div className="text-xs text-gray-500 hidden sm:block ml-1">{wordCount} words</div>
+  </div>
+</div>
 
       {/* BUBBLE MENU */}
       <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
@@ -749,7 +925,7 @@ export default function UltimateTipTapEditor({
 
       {/* SLASH COMMAND MENU */}
       <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
-        <div className="bg-white shadow-xl rounded-lg p-1 border border-gray-200 w-56 max-h-60 overflow-y-auto">
+        <div className="bg-white text-gray-800 shadow-xl rounded-lg p-1 border border-gray-200 w-56 max-h-60 overflow-y-auto">
           <button
             onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
             className="block w-full text-left px-3 py-1.5 text-sm hover:bg-gray-100 rounded"
