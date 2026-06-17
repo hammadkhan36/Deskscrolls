@@ -888,7 +888,7 @@ export default function UltimateTipTapEditor({
 </div>
 
       {/* BUBBLE MENU */}
-      <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+      {/* <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
         <div className="flex gap-1 bg-white shadow-lg rounded-lg p-1.5 border border-gray-200">
           <button
             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -921,7 +921,19 @@ export default function UltimateTipTapEditor({
             🖼
           </button>
         </div>
-      </BubbleMenu>
+      </BubbleMenu> */}
+      <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+  <div className="flex gap-0.5 bg-white shadow-lg rounded-lg p-1.5 border border-gray-200">
+    <button onClick={() => editor.chain().focus().toggleBold().run()} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Bold"><Bold size={14} /></button>
+    <button onClick={() => editor.chain().focus().toggleItalic().run()} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Italic"><Italic size={14} /></button>
+    <button onClick={() => editor.chain().focus().toggleUnderline().run()} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Underline"><Underline size={14} /></button>
+    <button onClick={() => {
+      const url = window.prompt('Enter URL:');
+      if (url) editor.chain().focus().setLink({ href: url }).run();
+    }} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Link"><Link2 size={14} /></button>
+    <button onClick={handleImageUpload} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Upload image"><ImageIcon size={14} /></button>
+  </div>
+</BubbleMenu>
 
       {/* SLASH COMMAND MENU */}
       <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
