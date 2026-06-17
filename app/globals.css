@@ -133,3 +133,12 @@ body {
 }
 
 
+
+
+
+/* DeskScrolls – fix bullet list gap due to nested <p> inside <li> */
+.prose ul li > p,
+.prose ol li > p {
+  margin-top: 0;
+  margin-bottom: 0;
+}

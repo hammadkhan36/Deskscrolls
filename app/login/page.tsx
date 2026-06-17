@@ -165,6 +165,11 @@ export default function LoginPage() {
       <p className="mt-4 text-sm">
         Don't have an account? <Link href="/signup" className="text-blue-600 underline">Sign up</Link>
       </p>
+      <p className="mt-2 text-sm text-right">
+  <Link href="/forgot-password" className="text-blue-600 underline">
+    Forgot Password?
+  </Link>
+</p>
     </div>
   )
 }

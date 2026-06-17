@@ -264,7 +264,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         className="min-h-screen bg-[#FAFAF7] pt-8 pb-16"
         style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
       >
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
 
 
 
@@ -312,13 +312,16 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       <Link
         key={cat.category.id}
         href={`/setups?category=${cat.category.slug}`}
-        className="text-xs font-semibold uppercase tracking-wider text-[#D97742] hover:text-[#B85C2E] transition-colors"
+        className="text-xs font-semibold uppercase tracking-wider text-[#D97742]
+         hover:text-[#B85C2E] transition-colors"
       >
         {cat.category.name}
       </Link>
     ))}
   </div>
 )}
+
+
 
 
           {/* ── Title block ── */}
@@ -340,7 +343,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </div>
 
           {/* ── Main content card ── */}
-          <div className="bg-white border border-[#E6E1D8] rounded-xl p-6 sm:p-8 mb-10 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
+          <div className="bg-white border  border-[#D97742] rounded-xl p-6 sm:p-8 mb-10 shadow-[0_2px_12px_rgba(0,0,0,0.05)]">
             {/* {setup.content && (
               <div
                 className="prose prose-neutral max-w-none text-[#1E1E1E]
@@ -359,7 +362,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     className="prose prose-neutral max-w-none text-[#1E1E1E]
       prose-headings:font-bold prose-headings:text-[#1E1E1E]
       prose-a:text-[#D97742] hover:prose-a:text-[#B85C2E]
-      prose-blockquote:border-l-[#D97742] prose-blockquote:text-[#6B6B6B]"
+      prose-blockquote:border-4-[#D97742] prose-blockquote:text-[#6B6B6B]
+      "
   >
     <EmbedRenderer content={setup.content} />
   </div>
