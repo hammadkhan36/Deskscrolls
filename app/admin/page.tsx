@@ -101,7 +101,6 @@
 
 
 
-
 import { createServerSupabase } from '@/lib/supabase/server'
 import Link from 'next/link'
 import AdminTable from './AdminTable'
@@ -131,19 +130,15 @@ export default async function AdminDashboard() {
     return <div className="p-10 text-red-600">Failed to load setups.</div>
   }
 
-  // ---------- Data transformation (fix) ----------
   const safeSetups = (setups ?? []).map((setup: any) => ({
     ...setup,
-    // author ko array se single object mein convert karo
     author: Array.isArray(setup.author) ? setup.author[0] ?? null : setup.author,
-    // categories ko simple string array banao
     categories: Array.isArray(setup.categories)
       ? setup.categories
-          .map((sc: any) => sc.category?.name)
-          .filter(Boolean)
+          .filter((sc: any) => sc?.category?.name)
+          .map((sc: any) => ({ category: { name: sc.category.name } }))
       : [],
   }))
-  // -----------------------------------------------
 
   return (
     <div className="max-w-6xl mx-auto p-6">
