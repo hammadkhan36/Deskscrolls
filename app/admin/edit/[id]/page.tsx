@@ -27,7 +27,7 @@ export default function EditSetup() {
   const [shortIntro, setShortIntro] = useState('')
   const [content, setContent] = useState('')
   // const [categoryId, setCategoryId] = useState('')
-   const [categoryIds, setCategoryIds] = useState<string[]>([])  // change
+  const [categoryIds, setCategoryIds] = useState<string[]>([])  // change
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
   const [published, setPublished] = useState(false)
 
@@ -58,9 +58,18 @@ export default function EditSetup() {
   useEffect(() => {
     const fetchSetup = async () => {
       setFetching(true)
+      // const { data: setup, error } = await supabase
+      //   .from('setups')
+      //   .select('*, setup_images(id, image_url)')
+      //   .eq('id', setupId)
+      //   .single()
       const { data: setup, error } = await supabase
         .from('setups')
-        .select('*, setup_images(id, image_url)')
+        .select(`
+          *,
+          setup_images(id, image_url),
+          setup_categories(category_id)
+        `)
         .eq('id', setupId)
         .single()
 
@@ -77,8 +86,9 @@ export default function EditSetup() {
       setShortIntro(setup.short_intro || '')
       setContent(setup.content || '')
       // setCategoryId(setup.category_id || '')
-       const fetchedCategoryIds = (setup.setup_categories || []).map((sc: any) => sc.category_id)
+      const fetchedCategoryIds = (setup.setup_categories || []).map((sc: any) => sc.category_id)
       setCategoryIds(fetchedCategoryIds)
+      
 
       setPublished(setup.published)
       setExistingCoverUrl(setup.cover_image_url)
@@ -145,7 +155,7 @@ export default function EditSetup() {
       if (updateError) throw updateError
 
 
-       // Sync categories: delete all existing, then insert new
+      // Sync categories: delete all existing, then insert new
       await supabase.from('setup_categories').delete().eq('setup_id', setupId)
       if (categoryIds.length > 0) {
         const rows = categoryIds.map(catId => ({
@@ -179,9 +189,9 @@ export default function EditSetup() {
       router.push('/admin') // back to dashboard
 
       // success
-setSaved(true)
-setError('')
-setLoading(false)
+      setSaved(true)
+      setError('')
+      setLoading(false)
 
     } catch (err: any) {
       setError(err.message)
@@ -202,11 +212,11 @@ setLoading(false)
     <div className="max-w-lg mx-auto p-4 sm:p-6">
       <h1 className="text-2xl font-bold mb-6">Edit Desk Setup</h1>
       {error && <div className="bg-red-100 text-red-700 p-2 rounded mb-4">{error}</div>}
-{saved && (
-  <div className="bg-green-100 text-green-800 p-2 rounded mb-4">
-    Setup updated successfully! You can continue editing.
-  </div>
-)}
+      {saved && (
+        <div className="bg-green-100 text-green-800 p-2 rounded mb-4">
+          Setup updated successfully! You can continue editing.
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <input
@@ -241,14 +251,14 @@ setLoading(false)
         />
 
 
-<div>
-        <label className="block text-sm font-medium mb-1">Categories</label>
-        <CategoryMultiSelect
-          categories={categories}
-          selectedIds={categoryIds}
-          onChange={setCategoryIds}
-        />
-      </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Categories</label>
+          <CategoryMultiSelect
+            categories={categories}
+            selectedIds={categoryIds}
+            onChange={setCategoryIds}
+          />
+        </div>
         {/* <select
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
