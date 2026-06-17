@@ -592,7 +592,7 @@ import {
   Bold, Italic, Underline, Strikethrough, AlignLeft, AlignCenter, 
   AlignRight, AlignJustify, List, ListOrdered, Quote, Code2, 
   ImageIcon, Minus, Table2,  Link2, Heading1, Heading2, 
-  Heading3, Undo2, Redo2, Palette, X, ChevronDown, Type, Maximize2, CheckSquare,
+  Heading3, Undo2, Redo2, Palette, X, ChevronDown, Type, Maximize2, CheckSquare,Eraser ,
 } from 'lucide-react'
 
 import { EmbedExtension } from '@/../extensions/EmbedExtension'  // 👈 add this
@@ -615,6 +615,7 @@ export default function UltimateTipTapEditor({
   const [uploading, setUploading] = useState(false) // loading state for image upload
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({ codeBlock: false }),
       TaskList,
@@ -715,14 +716,16 @@ export default function UltimateTipTapEditor({
       className={`border border-gray-200 rounded-xl overflow-hidden text-gray-800 bg-white ${isFullscreen ? 'fixed inset-0 z-50' : ''
         }`}
     >
+
+
       {/* Toolbar */}
-      {/* Toolbar */}
-<div className="sticky top-0 z-10 bg-white text-gray-700 border-b border-gray-200 p-1.5 flex flex-nowrap items-center gap-0.5 shadow-sm overflow-x-auto">
+      <div className="sticky top-0 z-10 bg-white text-gray-700 border-b border-gray-200 p-2 flex flex-wrap items-center gap-1 shadow-sm">
+{/* <div className="sticky top-0 z-10 bg-white text-gray-700 border-b border-gray-200 p-1.5 flex flex-nowrap items-center gap-0.5 shadow-sm overflow-x-auto"> */}
   {/* History */}
-  <button onClick={() => editor.chain().focus().undo().run()} className="p-1.5 hover:bg-gray-100 rounded-md" title="Undo">
+  <button type="button" onClick={() => editor.chain().focus().undo().run()} className="p-1.5 hover:bg-gray-100 rounded-md" title="Undo">
     <Undo2 size={16} />
   </button>
-  <button onClick={() => editor.chain().focus().redo().run()} className="p-1.5 hover:bg-gray-100 rounded-md" title="Redo">
+  <button type="button" onClick={() => editor.chain().focus().redo().run()} className="p-1.5 hover:bg-gray-100 rounded-md" title="Redo">
     <Redo2 size={16} />
   </button>
   <div className="w-px h-5 bg-gray-200 mx-1" />
@@ -751,33 +754,42 @@ export default function UltimateTipTapEditor({
 
   {/* Formatting */}
   <div className="flex gap-0.5 items-center">
-    <button onClick={() => editor.chain().focus().toggleBold().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('bold') ? 'bg-gray-200 text-gray-900' : 'text-gray-600'}`} title="Bold (Ctrl+B)">
+    <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('bold') ? 'bg-gray-200 text-gray-900' : 'text-gray-600'}`} title="Bold (Ctrl+B)">
       <Bold size={16} />
     </button>
-    <button onClick={() => editor.chain().focus().toggleItalic().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('italic') ? 'bg-gray-200 text-gray-900' : 'text-gray-600'}`} title="Italic (Ctrl+I)">
+    <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('italic') ? 'bg-gray-200 text-gray-900' : 'text-gray-600'}`} title="Italic (Ctrl+I)">
       <Italic size={16} />
     </button>
-    <button onClick={() => editor.chain().focus().toggleUnderline().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('underline') ? 'bg-gray-200 text-gray-900' : 'text-gray-600'}`} title="Underline (Ctrl+U)">
+    <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('underline') ? 'bg-gray-200 text-gray-900' : 'text-gray-600'}`} title="Underline (Ctrl+U)">
       <Underline size={16} />
     </button>
-    <button onClick={() => editor.chain().focus().toggleStrike().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('strike') ? 'bg-gray-200 text-gray-900' : 'text-gray-600'}`} title="Strikethrough">
+    <button type="button" onClick={() => editor.chain().focus().toggleStrike().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('strike') ? 'bg-gray-200 text-gray-900' : 'text-gray-600'}`} title="Strikethrough">
       <Strikethrough size={16} />
     </button>
   </div>
   <div className="w-px h-5 bg-gray-200 mx-1" />
 
+  <button 
+  type="button"
+  onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}
+  className="p-1.5 rounded hover:bg-gray-100 text-gray-600" 
+  title="Clear formatting"
+>
+  <Eraser size={16} />
+</button>
+
   {/* Alignment */}
   <div className="flex gap-0.5">
-    <button onClick={() => editor.chain().focus().setTextAlign('left').run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'left' }) ? 'bg-gray-200' : 'text-gray-600'}`} title="Align left">
+    <button type="button" onClick={() => editor.chain().focus().setTextAlign('left').run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'left' }) ? 'bg-gray-200' : 'text-gray-600'}`} title="Align left">
       <AlignLeft size={16} />
     </button>
-    <button onClick={() => editor.chain().focus().setTextAlign('center').run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'center' }) ? 'bg-gray-200' : 'text-gray-600'}`} title="Align center">
+    <button type="button" onClick={() => editor.chain().focus().setTextAlign('center').run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'center' }) ? 'bg-gray-200' : 'text-gray-600'}`} title="Align center">
       <AlignCenter size={16} />
     </button>
-    <button onClick={() => editor.chain().focus().setTextAlign('right').run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'right' }) ? 'bg-gray-200' : 'text-gray-600'}`} title="Align right">
+    <button type="button" onClick={() => editor.chain().focus().setTextAlign('right').run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'right' }) ? 'bg-gray-200' : 'text-gray-600'}`} title="Align right">
       <AlignRight size={16} />
     </button>
-    <button onClick={() => editor.chain().focus().setTextAlign('justify').run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'justify' }) ? 'bg-gray-200' : 'text-gray-600'}`} title="Justify">
+    <button type="button" onClick={() => editor.chain().focus().setTextAlign('justify').run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'justify' }) ? 'bg-gray-200' : 'text-gray-600'}`} title="Justify">
       <AlignJustify size={16} />
     </button>
   </div>
@@ -785,10 +797,10 @@ export default function UltimateTipTapEditor({
 
   {/* Lists */}
   <div className="flex gap-0.5">
-    <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('bulletList') ? 'bg-gray-200' : 'text-gray-600'}`} title="Bullet list">
+    <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('bulletList') ? 'bg-gray-200' : 'text-gray-600'}`} title="Bullet list">
       <List size={16} />
     </button>
-    <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('orderedList') ? 'bg-gray-200' : 'text-gray-600'}`} title="Ordered list">
+    <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('orderedList') ? 'bg-gray-200' : 'text-gray-600'}`} title="Ordered list">
       <ListOrdered size={16} />
     </button>
   </div>
@@ -796,19 +808,19 @@ export default function UltimateTipTapEditor({
 
   {/* Insert media / blocks */}
   <div className="flex gap-0.5">
-    <button onClick={handleImageUpload} disabled={uploading} className="p-1.5 rounded hover:bg-gray-100 disabled:opacity-50 text-gray-600" title="Upload image">
+    <button type="button" onClick={handleImageUpload} disabled={uploading} className="p-1.5 rounded hover:bg-gray-100 disabled:opacity-50 text-gray-600" title="Upload image">
       {uploading ? <span className="text-xs">⏳</span> : <ImageIcon size={16} />}
     </button>
-    <button onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Insert table">
+    <button type="button" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Insert table">
       <Table2 size={16} />
     </button>
-    <button onClick={() => {
+    <button type="button" onClick={() => {
       const url = window.prompt('Enter YouTube URL:');
       if (url) editor.chain().focus().setYoutubeVideo({ src: url }).run();
     }} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="YouTube video">
       <Table2 size={16} /> {/* Youtube icon from lucide */}
     </button>
-    <button onClick={() => {
+    <button type="button" onClick={() => {
       const url = window.prompt('Paste Embed URL (Twitter, Instagram, etc.)');
       if (!url) return;
       let provider: 'other' | 'twitter' | 'instagram' | 'youtube' | 'reddit' | 'tiktok' | 'spotify' = 'other';
@@ -825,16 +837,16 @@ export default function UltimateTipTapEditor({
     }} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Embed social post">
       <Code2 size={16} /> {/* temporary embed icon, you can use Puzzle icon */}
     </button>
-    <button onClick={() => editor.chain().focus().toggleBlockquote().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('blockquote') ? 'bg-gray-200' : 'text-gray-600'}`} title="Blockquote">
+    <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('blockquote') ? 'bg-gray-200' : 'text-gray-600'}`} title="Blockquote">
       <Quote size={16} />
     </button>
-    <button onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('codeBlock') ? 'bg-gray-200' : 'text-gray-600'}`} title="Code block">
+    <button type="button" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('codeBlock') ? 'bg-gray-200' : 'text-gray-600'}`} title="Code block">
       <Code2 size={16} />
     </button>
-    <button onClick={() => editor.chain().focus().setHorizontalRule().run()} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Horizontal rule">
+    <button type="button" onClick={() => editor.chain().focus().setHorizontalRule().run()} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Horizontal rule">
       <Minus size={16} />
     </button>
-    <button onClick={() => editor.chain().focus().toggleTaskList().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('taskList') ? 'bg-gray-200' : 'text-gray-600'}`} title="Task list">
+    <button type="button" onClick={() => editor.chain().focus().toggleTaskList().run()} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('taskList') ? 'bg-gray-200' : 'text-gray-600'}`} title="Task list">
       <CheckSquare size={16} /> {/* You need to import CheckSquare from lucide */}
     </button>
   </div>
@@ -851,7 +863,7 @@ export default function UltimateTipTapEditor({
         className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
       />
     </label>
-    <button onClick={() => editor.chain().focus().unsetColor().run()} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Clear color">
+    <button type="button" onClick={() => editor.chain().focus().unsetColor().run()} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Clear color">
       <X size={16} />
     </button>
   </div>
@@ -871,7 +883,7 @@ export default function UltimateTipTapEditor({
   <div className="w-px h-5 bg-gray-200 mx-1" />
 
   {/* Link */}
-  <button onClick={() => {
+  <button type="button" onClick={() => {
     const url = window.prompt('Enter URL:');
     if (url) editor.chain().focus().setLink({ href: url }).run();
   }} className={`p-1.5 rounded hover:bg-gray-100 ${editor.isActive('link') ? 'bg-gray-200' : 'text-gray-600'}`} title="Insert link">
@@ -880,7 +892,7 @@ export default function UltimateTipTapEditor({
 
   {/* Fullscreen + word count (right side) */}
   <div className="ml-auto flex items-center gap-1">
-    <button onClick={() => setIsFullscreen(!isFullscreen)} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Toggle fullscreen">
+    <button type="button" onClick={() => setIsFullscreen(!isFullscreen)} className="p-1.5 rounded hover:bg-gray-100 text-gray-600" title="Toggle fullscreen">
       <Maximize2 size={16} /> {/* import Maximize2 from lucide */}
     </button>
     <div className="text-xs text-gray-500 hidden sm:block ml-1">{wordCount} words</div>
@@ -924,14 +936,14 @@ export default function UltimateTipTapEditor({
       </BubbleMenu> */}
       <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
   <div className="flex gap-0.5 bg-white shadow-lg rounded-lg p-1.5 border border-gray-200">
-    <button onClick={() => editor.chain().focus().toggleBold().run()} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Bold"><Bold size={14} /></button>
-    <button onClick={() => editor.chain().focus().toggleItalic().run()} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Italic"><Italic size={14} /></button>
-    <button onClick={() => editor.chain().focus().toggleUnderline().run()} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Underline"><Underline size={14} /></button>
-    <button onClick={() => {
+    <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Bold"><Bold size={14} /></button>
+    <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Italic"><Italic size={14} /></button>
+    <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Underline"><Underline size={14} /></button>
+    <button type="button" onClick={() => {
       const url = window.prompt('Enter URL:');
       if (url) editor.chain().focus().setLink({ href: url }).run();
     }} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Link"><Link2 size={14} /></button>
-    <button onClick={handleImageUpload} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Upload image"><ImageIcon size={14} /></button>
+    <button type="button" onClick={handleImageUpload} className="p-1.5 hover:bg-gray-100 rounded text-gray-600" title="Upload image"><ImageIcon size={14} /></button>
   </div>
 </BubbleMenu>
 
@@ -939,54 +951,63 @@ export default function UltimateTipTapEditor({
       <FloatingMenu editor={editor} tippyOptions={{ duration: 100 }}>
         <div className="bg-white text-gray-800 shadow-xl rounded-lg p-1 border border-gray-200 w-56 max-h-60 overflow-y-auto">
           <button
+          type="button"
             onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
             className="block w-full text-left px-3 py-1.5 text-sm hover:bg-gray-100 rounded"
           >
             Heading 1
           </button>
           <button
+            type="button"
             onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
             className="block w-full text-left px-3 py-1.5 text-sm hover:bg-gray-100 rounded"
           >
             Heading 2
           </button>
           <button
+            type="button"
             onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
             className="block w-full text-left px-3 py-1.5 text-sm hover:bg-gray-100 rounded"
           >
             Heading 3
           </button>
           <button
+            type="button"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
             className="block w-full text-left px-3 py-1.5 text-sm hover:bg-gray-100 rounded"
           >
             Bullet List
           </button>
           <button
+            type="button"
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
             className="block w-full text-left px-3 py-1.5 text-sm hover:bg-gray-100 rounded"
           >
             Numbered List
           </button>
           <button
+            type="button"
             onClick={() => editor.chain().focus().toggleBlockquote().run()}
             className="block w-full text-left px-3 py-1.5 text-sm hover:bg-gray-100 rounded"
           >
             Quote
           </button>
           <button
+            type="button"
             onClick={() => editor.chain().focus().toggleCodeBlock().run()}
             className="block w-full text-left px-3 py-1.5 text-sm hover:bg-gray-100 rounded"
           >
             Code Block
           </button>
           <button
+          type="button"
             onClick={handleImageUpload}
             className="block w-full text-left px-3 py-1.5 text-sm hover:bg-gray-100 rounded"
           >
             Image
           </button>
           <button
+          type="button"
             onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()}
             className="block w-full text-left px-3 py-1.5 text-sm hover:bg-gray-100 rounded"
           >
@@ -994,32 +1015,7 @@ export default function UltimateTipTapEditor({
           </button>
 
 
-          {/* Embed Code Button */}
-          {/* <button
-  onClick={() => {
-    const code = window.prompt('Paste embed code (e.g., <iframe>...</iframe>):')
-    if (code) {
-      // Extract iframe src for height detection (optional)
-      const srcMatch = code.match(/src=["']([^"']*)["']/)
-      let wrapperClass = 'embed-responsive'
-      if (srcMatch) {
-        const src = srcMatch[1].toLowerCase()
-        if (src.includes('instagram.com')) {
-          wrapperClass += ' ratio-4-5'
-        } else if (src.includes('spotify.com') && src.includes('/episode/')) {
-          wrapperClass = 'embed-responsive' // 16:9 ok
-        }
-        // add more platform detection if needed
-      }
-      const wrapped = `<div class="${wrapperClass}">${code}</div>`
-      editor?.chain().focus().insertContent(wrapped).run()
-    }
-  }}
-  className="px-2 py-0.5 rounded hover:bg-gray-100"
-  title="Insert Embed Code"
->
-  ww📺
-</button> */}
+      
 
         </div>
       </FloatingMenu>

@@ -43,7 +43,7 @@ export default function EditSetup() {
   const [fetching, setFetching] = useState(true) // while we load setup
 
   const [saved, setSaved] = useState(false)
-
+  const [saving, setSaving] = useState(false)
 
 
   // Fetch categories
@@ -88,7 +88,7 @@ export default function EditSetup() {
       // setCategoryId(setup.category_id || '')
       const fetchedCategoryIds = (setup.setup_categories || []).map((sc: any) => sc.category_id)
       setCategoryIds(fetchedCategoryIds)
-      
+
 
       setPublished(setup.published)
       setExistingCoverUrl(setup.cover_image_url)
@@ -117,6 +117,70 @@ export default function EditSetup() {
       return
     }
     setExistingGalleryImages(prev => prev.filter(img => img.id !== imageId))
+  }
+
+
+  //  Save handler (same as submit but without redirect, so we can show success message and keep editing)
+  const handleSave = async () => {
+    setSaving(true)
+    setError('')
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      let coverImageUrl = existingCoverUrl
+      if (coverFile) {
+        coverImageUrl = await uploadImage(coverFile, 'setups', 'covers')
+      }
+
+      const { error: updateError } = await supabase
+        .from('setups')
+        .update({
+          title,
+          slug,
+          owner_name: ownerName,
+          short_intro: shortIntro,
+          content,
+          cover_image_url: coverImageUrl,
+          published,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', setupId)
+      if (updateError) throw updateError
+
+      // Sync categories
+      await supabase.from('setup_categories').delete().eq('setup_id', setupId)
+      if (categoryIds.length > 0) {
+        const rows = categoryIds.map(catId => ({ setup_id: setupId, category_id: catId }))
+        const { error: catError } = await supabase.from('setup_categories').insert(rows)
+        if (catError) throw catError
+      }
+
+      // Upload new gallery images (same logic)
+      if (galleryFiles.length > 0) {
+        const maxOrder = existingGalleryImages.length > 0
+          ? Math.max(...existingGalleryImages.map((_, i) => i + 1))
+          : 0
+        for (let i = 0; i < galleryFiles.length; i++) {
+          const url = await uploadImage(galleryFiles[i], 'setups', 'gallery')
+          if (url) {
+            await supabase.from('setup_images').insert({
+              setup_id: setupId,
+              image_url: url,
+              sort_order: maxOrder + i + 1,
+            })
+          }
+        }
+      }
+
+      // Success message
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000) // message 3 sec ke liye
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setSaving(false)
+    }
   }
 
   // Submit handler (update)
@@ -334,6 +398,15 @@ export default function EditSetup() {
           <label className="block text-sm font-medium mb-1">Content *</label>
           <UltimateTipTapEditor content={content} onChange={setContent} />
         </div>
+
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={saving}
+          className="px-6 py-3 rounded-lg text-lg font-semibold bg-gray-600 text-white hover:bg-gray-700 disabled:opacity-50"
+        >
+          {saving ? 'Saving...' : 'Save'}
+        </button>
 
         <button
           type="submit"
