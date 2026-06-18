@@ -101,3 +101,192 @@ export default function SignupPage() {
     </div>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// han bilkul auto create hoti ha new user sign up karna pa profiles table maan new row add ho jati ha
+
+
+// SELECT proname, prosrc FROM pg_proc WHERE pronamespace = 'public'::regnamespace AND proname ILIKE '%user%' OR proname ILIKE '%profile%';
+
+// is ka result ye hai:
+// proname,prosrc
+// handle_new_user,"
+// begin
+//   insert into public.profiles (id, full_name, avatar_url, role)
+//   values (
+//     new.id,
+//     new.raw_user_meta_data ->> 'full_name',
+//     new.raw_user_meta_data ->> 'avatar_url',
+//     'author'               -- default role
+//   );
+//   return new;
+// end;
+// " ya dako
+
+
+
+
+// SELECT tablename, policyname, cmd, permissive, roles, qual, with_check
+// FROM pg_policies
+// WHERE tablename = 'setups';
+
+// is ka result ye hai:
+// tablename,policyname,cmd,permissive,roles,qual,with_check
+// setups,Admin full access setups,ALL,PERMISSIVE,{public},"(EXISTS ( SELECT 1
+//    FROM profiles
+//   WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'admin'::text))))",null
+// setups,Admin sees all setups,SELECT,PERMISSIVE,{public},"(EXISTS ( SELECT 1
+//    FROM profiles
+//   WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'admin'::text))))",null
+// setups,Authors insert setups,INSERT,PERMISSIVE,{public},null,(auth.uid() = author_id)
+// setups,Authors see own setups,SELECT,PERMISSIVE,{public},(auth.uid() = author_id),null
+// setups,Authors update own setups,UPDATE,PERMISSIVE,{public},(auth.uid() = author_id),(auth.uid() = author_id)
+// setups,Published setups viewable by everyone,SELECT,PERMISSIVE,{public},(published = true),null
+
+
+
+
+// nahi category_id  ab use nahi hota 
+// create table public.setup_categories (
+//   setup_id uuid not null,
+//   category_id uuid not null,
+//   constraint setup_categories_pkey primary key (setup_id, category_id),
+//   constraint setup_categories_category_id_fkey foreign KEY (category_id) references categories (id) on delete CASCADE,
+//   constraint setup_categories_setup_id_fkey foreign KEY (setup_id) references setups (id) on delete CASCADE
+// ) TABLESPACE pg_default;
+
+// ya table use hota ha 
+
+
+
+
+
+// bilkul setups maan articles han wo public daak saka gi 
+// sirf published = true aur deleted_at IS NULL wali rows hi public dekh sake.
+
+
+// nahi maan na abi taak kisi ko admin nahi kia . admin karna ha abi author hi ha 
+
+
+
+// baki tables 
+// create table public.categories (
+//   id uuid not null default extensions.uuid_generate_v4 (),
+//   name text not null,
+//   slug text not null,
+//   description text null,
+//   created_at timestamp with time zone null default now(),
+//   constraint categories_pkey primary key (id),
+//   constraint categories_name_key unique (name),
+//   constraint categories_slug_key unique (slug)
+// ) TABLESPACE pg_default;
+// ya categories ka table ha is maan categories ka data store hota ha
+
+
+// create table public.newsletter_subscribers (
+//   id uuid not null default extensions.uuid_generate_v4 (),
+//   email text not null,
+//   name text null,
+//   subscribed_at timestamp with time zone null default now(),
+//   unsubscribed_at timestamp with time zone null,
+//   status text null default 'active'::text,
+//   constraint newsletter_subscribers_pkey primary key (id),
+//   constraint newsletter_subscribers_email_key unique (email),
+//   constraint newsletter_subscribers_status_check check (
+//     (
+//       status = any (array['active'::text, 'unsubscribed'::text])
+//     )
+//   )
+// ) TABLESPACE pg_default;
+
+// create index IF not exists idx_newsletter_email on public.newsletter_subscribers using btree (email) TABLESPACE pg_default;
+
+// ya newsletter ka table ha jis maan public users ka email jo uno na khud subscribe kia tah wo aayin ga is maan 
+
+
+// baki setups sa related tables ya han
+
+// create table public.setup_images (
+//   id uuid not null default extensions.uuid_generate_v4 (),
+//   setup_id uuid not null,
+//   image_url text not null,
+//   alt_text text null,
+//   sort_order integer null default 0,
+//   created_at timestamp with time zone null default now(),
+//   constraint setup_images_pkey primary key (id),
+//   constraint setup_images_setup_id_fkey foreign KEY (setup_id) references setups (id) on delete CASCADE
+// ) TABLESPACE pg_default;
+
+// create index IF not exists idx_setup_images_setup on public.setup_images using btree (setup_id, sort_order) TABLESPACE pg_default;
+
+
+// create table public.setup_tags (
+//   setup_id uuid not null,
+//   tag_id uuid not null,
+//   constraint setup_tags_pkey primary key (setup_id, tag_id),
+//   constraint setup_tags_setup_id_fkey foreign KEY (setup_id) references setups (id) on delete CASCADE,
+//   constraint setup_tags_tag_id_fkey foreign KEY (tag_id) references tags (id) on delete CASCADE
+// ) TABLESPACE pg_default;
+
+
+// create table public.tags (
+//   id uuid not null default extensions.uuid_generate_v4 (),
+//   name text not null,
+//   slug text not null,
+//   created_at timestamp with time zone null default now(),
+//   constraint tags_pkey primary key (id),
+//   constraint tags_name_key unique (name),
+//   constraint tags_slug_key unique (slug)
+// ) TABLESPACE pg_default;
+
+
+// or agar koi user apna desk setup submit karta ha tu us ka lia ya table ha 
+
+// create table public.submissions (
+//   id uuid not null default extensions.uuid_generate_v4 (),
+//   email text not null,
+//   name text not null,
+//   twitter text null,
+//   instagram text null,
+//   photo_link text null,
+//   description text null,
+//   equipment text null,
+//   consent boolean not null default false,
+//   newsletter boolean null default false,
+//   status text null default 'pending'::text,
+//   created_at timestamp with time zone null default now(),
+//   social_profiles jsonb null default '[]'::jsonb,
+//   image_urls jsonb null default '[]'::jsonb,
+//   constraint submissions_pkey primary key (id),
+//   constraint submissions_status_check check (
+//     (
+//       status = any (
+//         array[
+//           'pending'::text,
+//           'approved'::text,
+//           'rejected'::text
+//         ]
+//       )
+//     )
+//   )
+// ) TABLESPACE pg_default;
+
