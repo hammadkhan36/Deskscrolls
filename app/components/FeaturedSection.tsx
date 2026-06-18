@@ -212,9 +212,14 @@ export default function FeaturedSection({
 
       if (setupsRes.error) throw setupsRes.error
       setSetups(setupsRes.setups?.slice(0, limit) || [])
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err)
       setError(true)
+
+      // Temporary: show error message
+      const error = err as { message?: string; details?: string }
+      setHeading('Error: ' + (error.message || error.details || 'Unknown error'))
+
     } finally {
       setLoading(false)
     }
