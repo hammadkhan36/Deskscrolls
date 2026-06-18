@@ -398,6 +398,7 @@ export default function NewSetup() {
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [galleryFiles, setGalleryFiles] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
+  const [savingDraft, setSavingDraft] = useState(false) // <-- naya state
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -418,6 +419,65 @@ export default function NewSetup() {
     }
   }, [title, slug])
 
+
+  // ─── NEW: Save Draft handler ───
+  const handleSaveDraft = async () => {
+    setSavingDraft(true)
+    setError('')
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      let coverImageUrl: string | null = null
+      if (coverFile) {
+        coverImageUrl = await uploadImage(coverFile, 'setups', 'covers')
+      }
+
+      const { data: setup, error: insertError } = await supabase
+        .from('setups')
+        .insert({
+          title,
+          slug,
+          owner_name: ownerName,
+          short_intro: shortIntro,
+          content,
+          cover_image_url: coverImageUrl,
+          published: false,
+          author_id: user.id,
+        })
+        .select('id')
+        .single()
+      if (insertError) throw insertError
+
+      // Categories
+      if (setup && categoryIds.length > 0) {
+        const rows = categoryIds.map(catId => ({ setup_id: setup.id, category_id: catId }))
+        const { error: catError } = await supabase.from('setup_categories').insert(rows)
+        if (catError) throw catError
+      }
+
+      // Gallery images
+      if (setup && galleryFiles.length > 0) {
+        for (let i = 0; i < galleryFiles.length; i++) {
+          const url = await uploadImage(galleryFiles[i], 'setups', 'gallery')
+          await supabase.from('setup_images').insert({
+            setup_id: setup.id,
+            image_url: url,
+            sort_order: i + 1,
+          })
+        }
+      }
+
+      // Redirect to edit page (taake aap aur edit kar sako)
+      router.push(`/admin/edit/${setup.id}`)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setSavingDraft(false)
+    }
+  }
+
+  // Original submit handler (creates and goes to admin)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -453,7 +513,7 @@ export default function NewSetup() {
       if (insertError) throw insertError
 
 
-       // Insert multiple categories
+      // Insert multiple categories
       if (setup && categoryIds.length > 0) {
         const rows = categoryIds.map(catId => ({
           setup_id: setup.id,
@@ -533,17 +593,17 @@ export default function NewSetup() {
             </option>
           ))}
         </select> */}
-<div>
-        <label className="block text-sm font-medium mb-1">Categories</label>
-        <CategoryMultiSelect
-          categories={categories}
-          selectedIds={categoryIds}
-          onChange={setCategoryIds}
-        />
-      </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Categories</label>
+          <CategoryMultiSelect
+            categories={categories}
+            selectedIds={categoryIds}
+            onChange={setCategoryIds}
+          />
+        </div>
 
 
-      
+
         <div>
           <label className="block text-sm font-medium mb-1">Cover Image</label>
           <input
@@ -570,7 +630,7 @@ export default function NewSetup() {
           <UltimateTipTapEditor content={content} onChange={setContent} />
         </div>
 
-        <button
+        {/* <button
           type="submit"
           disabled={loading}
           className="w-full bg-green-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-green-700 disabled:opacity-50"
@@ -578,6 +638,28 @@ export default function NewSetup() {
           {loading ? 'Saving...' : 'Create Setup'}
         </button>
       </form>
+    </div> */}
+
+
+      <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={handleSaveDraft}
+            disabled={savingDraft}
+            className="px-6 py-3 rounded-lg text-lg font-semibold bg-gray-600 text-white hover:bg-gray-700 disabled:opacity-50"
+          >
+            {savingDraft ? 'Saving...' : 'Save Draft'}
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-6 py-3 rounded-lg text-lg font-semibold bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+          >
+            {loading ? 'Creating...' : 'Create Setup'}
+          </button>
+        </div>
+      </form>
     </div>
+    
   )
 }

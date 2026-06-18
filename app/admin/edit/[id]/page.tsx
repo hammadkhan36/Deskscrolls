@@ -1,7 +1,8 @@
 // app/admin/edit/[id]/page.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+
+import { useEffect, useState, useRef } from 'react' // <-- useRef add kiya
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
@@ -44,6 +45,11 @@ export default function EditSetup() {
 
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
+
+  
+  // Ref for file inputs – add kiye
+  const coverInputRef = useRef<HTMLInputElement>(null)
+  const galleryInputRef = useRef<HTMLInputElement>(null)
 
 
   // Fetch categories
@@ -157,6 +163,24 @@ export default function EditSetup() {
       }
 
       // Upload new gallery images (same logic)
+      // if (galleryFiles.length > 0) {
+      //   const maxOrder = existingGalleryImages.length > 0
+      //     ? Math.max(...existingGalleryImages.map((_, i) => i + 1))
+      //     : 0
+      //   for (let i = 0; i < galleryFiles.length; i++) {
+      //     const url = await uploadImage(galleryFiles[i], 'setups', 'gallery')
+      //     if (url) {
+      //       await supabase.from('setup_images').insert({
+      //         setup_id: setupId,
+      //         image_url: url,
+      //         sort_order: maxOrder + i + 1,
+      //       })
+      //     }
+      //   }
+      // }
+
+       // Upload new gallery images (only if new files exist)
+      let newlyUploadedUrls: string[] = []
       if (galleryFiles.length > 0) {
         const maxOrder = existingGalleryImages.length > 0
           ? Math.max(...existingGalleryImages.map((_, i) => i + 1))
@@ -169,9 +193,34 @@ export default function EditSetup() {
               image_url: url,
               sort_order: maxOrder + i + 1,
             })
+            newlyUploadedUrls.push(url)
           }
         }
       }
+
+
+      // ─── NEW: Clear file inputs and update state ───
+      // 1. Cover image
+      if (coverFile) {
+        setExistingCoverUrl(coverImageUrl) // naye cover ko existing banao
+        setCoverFile(null)
+        if (coverInputRef.current) coverInputRef.current.value = ''
+      }
+
+
+       // 2. Gallery images
+      setGalleryFiles([])
+      if (galleryInputRef.current) galleryInputRef.current.value = ''
+
+      // 3. Add newly uploaded images to existing list (so they show immediately)
+      if (newlyUploadedUrls.length > 0) {
+        const newImages = newlyUploadedUrls.map((url, idx) => ({
+          id: `new_${Date.now()}_${idx}`, // temporary id, DB se real aayegi to replace ho jayegi
+          url,
+        }))
+        setExistingGalleryImages(prev => [...prev, ...newImages])
+      }
+
 
       // Success message
       setSaved(true)
@@ -231,13 +280,31 @@ export default function EditSetup() {
       }
 
 
-      // Upload new gallery images (if any)
+      // // Upload new gallery images (if any)
+      // if (galleryFiles.length > 0) {
+      //   // Get current max sort_order or start from 0
+      //   const maxOrder = existingGalleryImages.length > 0
+      //     ? Math.max(...existingGalleryImages.map((_, i) => i + 1))
+      //     : 0
+
+      //   for (let i = 0; i < galleryFiles.length; i++) {
+      //     const url = await uploadImage(galleryFiles[i], 'setups', 'gallery')
+      //     if (url) {
+      //       await supabase.from('setup_images').insert({
+      //         setup_id: setupId,
+      //         image_url: url,
+      //         sort_order: maxOrder + i + 1,
+      //       })
+      //     }
+      //   }
+      // }
+
+       // Upload new gallery images
+      let newlyUploadedUrls: string[] = []
       if (galleryFiles.length > 0) {
-        // Get current max sort_order or start from 0
         const maxOrder = existingGalleryImages.length > 0
           ? Math.max(...existingGalleryImages.map((_, i) => i + 1))
           : 0
-
         for (let i = 0; i < galleryFiles.length; i++) {
           const url = await uploadImage(galleryFiles[i], 'setups', 'gallery')
           if (url) {
@@ -246,8 +313,25 @@ export default function EditSetup() {
               image_url: url,
               sort_order: maxOrder + i + 1,
             })
+            newlyUploadedUrls.push(url)
           }
         }
+      }
+
+      // ─── NEW: Clear file inputs and update state (same as handleSave) ───
+      if (coverFile) {
+        setExistingCoverUrl(coverImageUrl)
+        setCoverFile(null)
+        if (coverInputRef.current) coverInputRef.current.value = ''
+      }
+      setGalleryFiles([])
+      if (galleryInputRef.current) galleryInputRef.current.value = ''
+      if (newlyUploadedUrls.length > 0) {
+        const newImages = newlyUploadedUrls.map((url, idx) => ({
+          id: `new_${Date.now()}_${idx}`,
+          url,
+        }))
+        setExistingGalleryImages(prev => [...prev, ...newImages])
       }
 
       router.push('/admin') // back to dashboard
@@ -384,6 +468,7 @@ export default function EditSetup() {
             </div>
           )}
           <input
+           ref={galleryInputRef}  // <-- ref add kiya
             type="file"
             multiple
             accept="image/*"
