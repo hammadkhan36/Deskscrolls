@@ -40,7 +40,7 @@
 //       {/* <BlogCard title="Benten Woodring" subtitle="Lead UI Designer" /> */}
 
 //       {/* <FeaturedSection /> */}
-    
+
 //  {/* Category filter bar
 //       <div className="flex gap-2 px-4 pt-6 overflow-x-auto">
 //         <button
@@ -65,7 +65,7 @@
 
 //       {/* 1. Default Variant (Image 1) */}
 //       <SubscribeSection variant="default" />
-      
+
 //  <FeaturedSection categorySlug="all" limit={6} />
 
 
@@ -129,7 +129,9 @@ export default function Home() {
       <NewsletterSubscribe />
 
       {/* Minimal setups spotlight */}
-      <FeaturedSection categorySlug="minimal-setups" limit={6} />
+      {/* <FeaturedSection categorySlug="minimal-setups" limit={6} /> */}
+      <FeaturedSection categorySlug="all" limit={6} />
+
 
       {/* Mid-page subscribe nudge */}
       <SubscribeSection variant="default" />
