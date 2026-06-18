@@ -7,6 +7,7 @@ export async function getPublishedSetups(categorySlug?: string, featuredOnly = f
     .from('setups')
     .select('id, title, slug, owner_name, short_intro, cover_image_url, category_id, published_at')
     .eq('published', true)
+    .is('deleted_at', null)  // ⬅️ YEH LINE ADD KARO
     .order('published_at', { ascending: false })
 
   if (featuredOnly) {
