@@ -34,6 +34,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+
+       {/* Pinterest domain verification */}
+        <meta name="p:domain_verify" content="bc00c994ba968ef1c058dc5be0b577c2" />
+
         {/* Google Fonts — Inter + Playfair Display */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
