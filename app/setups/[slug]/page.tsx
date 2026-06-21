@@ -280,6 +280,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       {setup.categories.map((cat: any) => (
         <Link
           key={cat.category.id}
+          // href={`/setups?category=${cat.category.slug}`}
           href={`/setups?category=${cat.category.slug}`}
           className="hover:text-[#D97742] transition-colors text-[#6B6B6B]"
         >
@@ -311,7 +312,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     {setup.categories.map((cat: any) => (
       <Link
         key={cat.category.id}
-        href={`/setups?category=${cat.category.slug}`}
+        // href={`/setups?category=${cat.category.slug}`}
+        href={`/${cat.category.slug}`}
         className="text-xs font-semibold uppercase tracking-wider text-[#D97742]
          hover:text-[#B85C2E] transition-colors"
       >

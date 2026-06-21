@@ -318,7 +318,8 @@ export default function Navbar() {
                 {categories.map((cat) => (
                   <Link
                     key={cat.slug}
-                    href={`/setups?category=${cat.slug}`}
+                    // href={`/setups?category=${cat.slug}`}
+                    href={`/${cat.slug}`}
                     onClick={() => setIsSetupsOpen(false)}
                     className="block px-4 py-2 text-sm text-[#6B6B6B] hover:bg-[#F5E6D3] hover:text-[#D97742] transition-colors"
                   >
