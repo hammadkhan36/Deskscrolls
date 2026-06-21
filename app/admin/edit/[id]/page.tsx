@@ -31,6 +31,7 @@ export default function EditSetup() {
   const [categoryIds, setCategoryIds] = useState<string[]>([])  // change
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
   const [published, setPublished] = useState(false)
+  const [primaryCategoryId, setPrimaryCategoryId] = useState<string>('')
 
   // Images state
   const [coverFile, setCoverFile] = useState<File | null>(null)
@@ -46,7 +47,7 @@ export default function EditSetup() {
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
 
-  
+
   // Ref for file inputs – add kiye
   const coverInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
@@ -79,6 +80,7 @@ export default function EditSetup() {
         .eq('id', setupId)
         .single()
 
+
       if (error || !setup) {
         setError('Setup not found or you do not have permission to edit it.')
         setFetching(false)
@@ -94,6 +96,9 @@ export default function EditSetup() {
       // setCategoryId(setup.category_id || '')
       const fetchedCategoryIds = (setup.setup_categories || []).map((sc: any) => sc.category_id)
       setCategoryIds(fetchedCategoryIds)
+
+      // 👇 Primary category set karo
+      setPrimaryCategoryId(setup.category_id || '')
 
 
       setPublished(setup.published)
@@ -147,6 +152,7 @@ export default function EditSetup() {
           owner_name: ownerName,
           short_intro: shortIntro,
           content,
+           category_id: primaryCategoryId || null,   // 👈 add kiya
           cover_image_url: coverImageUrl,
           published,
           updated_at: new Date().toISOString(),
@@ -179,7 +185,7 @@ export default function EditSetup() {
       //   }
       // }
 
-       // Upload new gallery images (only if new files exist)
+      // Upload new gallery images (only if new files exist)
       let newlyUploadedUrls: string[] = []
       if (galleryFiles.length > 0) {
         const maxOrder = existingGalleryImages.length > 0
@@ -208,7 +214,7 @@ export default function EditSetup() {
       }
 
 
-       // 2. Gallery images
+      // 2. Gallery images
       setGalleryFiles([])
       if (galleryInputRef.current) galleryInputRef.current.value = ''
 
@@ -258,6 +264,7 @@ export default function EditSetup() {
           owner_name: ownerName,
           short_intro: shortIntro,
           content,
+           category_id: primaryCategoryId || null,   // 👈 add kiya
           // category_id: categoryId || null,
           cover_image_url: coverImageUrl,
           published,
@@ -299,7 +306,7 @@ export default function EditSetup() {
       //   }
       // }
 
-       // Upload new gallery images
+      // Upload new gallery images
       let newlyUploadedUrls: string[] = []
       if (galleryFiles.length > 0) {
         const maxOrder = existingGalleryImages.length > 0
@@ -407,6 +414,27 @@ export default function EditSetup() {
             onChange={setCategoryIds}
           />
         </div>
+
+
+        <div>
+  <label className="block text-sm font-medium mb-1">Primary Category</label>
+  <select
+    value={primaryCategoryId}
+    onChange={(e) => {
+      const val = e.target.value;
+      setPrimaryCategoryId(val);
+      if (val && !categoryIds.includes(val)) {
+        setCategoryIds(prev => [...prev, val]);
+      }
+    }}
+    className="w-full border p-3 rounded-lg text-base bg-white"
+  >
+    <option value="">None</option>
+    {categories.map(cat => (
+      <option key={cat.id} value={cat.id}>{cat.name}</option>
+    ))}
+  </select>
+</div>
         {/* <select
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
@@ -468,7 +496,7 @@ export default function EditSetup() {
             </div>
           )}
           <input
-           ref={galleryInputRef}  // <-- ref add kiya
+            ref={galleryInputRef}  // <-- ref add kiya
             type="file"
             multiple
             accept="image/*"

@@ -221,7 +221,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   .from('setups')
   .select(`
     *,
-    categories:setup_categories(category:categories(id, name, slug)),
+    primary_category:categories(id, name, slug),
+    additional_categories:setup_categories(category:categories(id, name, slug)),
     author:profiles(full_name, avatar_url),
     setup_images(id, image_url, alt_text, sort_order)
   `)
@@ -269,11 +270,11 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
 
 {/* Breadcrumb ... */}
-<nav className="flex items-center gap-2 text-[13px] text-[#6B6B6B] mb-6">
+{/* <nav className="flex items-center gap-2 text-[13px] text-[#6B6B6B] mb-6">
   <Link href="/" className="hover:text-[#D97742] transition-colors">Home</Link>
   <span>/</span>
   <Link href="/setups" className="hover:text-[#D97742] transition-colors">Setups</Link>
-  {/* Agar multiple categories hain to yahan sab dikhao */}
+  {/* Agar multiple categories hain to yahan sab dikhao /}
   {setup.categories && setup.categories.length > 0 && (
     <>
       <span>/</span>
@@ -287,6 +288,20 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           {cat.category.name}
         </Link>
       ))}
+    </>
+  )}
+</nav> */}
+
+<nav className="flex items-center gap-2 text-[13px] text-[#6B6B6B] mb-6">
+  <Link href="/">Home</Link>
+  <span>/</span>
+  <Link href="/setups">Setups</Link>
+  {setup.primary_category && (
+    <>
+      <span>/</span>
+      <Link href={`/${setup.primary_category.slug}`}>
+        {setup.primary_category.name}
+      </Link>
     </>
   )}
 </nav>
@@ -307,7 +322,23 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               </>
             )}
           </nav> */}
-{setup.categories && setup.categories.length > 0 && (
+
+
+          {setup.additional_categories && setup.additional_categories.length > 0 && (
+  <div className="flex gap-2 mt-2 flex-wrap">
+    {setup.additional_categories
+      .filter((cat: any) => cat.category.id !== setup.primary_category?.id)
+      .map((cat: any) => (
+        <Link
+          key={cat.category.id}
+          href={`/${cat.category.slug}`}
+className="text-xs font-semibold uppercase tracking-wider text-[#D97742] hover:text-[#B85C2E] transition-colors bg-white px-2.5 py-1 rounded-full border border-[#E6E1D8]"        >
+          {cat.category.name}
+        </Link>
+      ))}
+  </div>
+)}
+{/* {setup.categories && setup.categories.length > 0 && (
   <div className="flex gap-2 mt-2">
     {setup.categories.map((cat: any) => (
       <Link
@@ -321,7 +352,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       </Link>
     ))}
   </div>
-)}
+)} */}
 
 
 
@@ -334,14 +365,23 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             {setup.short_intro && (
               <p className="text-[#6B6B6B] text-[16px] leading-relaxed">{setup.short_intro}</p>
             )}
-            {setup.category && (
+
+            {setup.primary_category && (
+  <Link
+    href={`/${setup.primary_category.slug}`}
+    className="mt-3 inline-block text-xs font-semibold uppercase tracking-wider text-[#D97742] hover:text-[#B85C2E] transition-colors"
+  >
+    {setup.primary_category.name}
+  </Link>
+)}
+            {/* {setup.category && (
               <Link
                 href={`/setups?category=${setup.category.slug}`}
                 className="mt-3 inline-block text-xs font-semibold uppercase tracking-wider text-[#D97742] hover:text-[#B85C2E] transition-colors"
               >
                 {setup.category.name}
               </Link>
-            )}
+            )} */}
           </div>
 
           {/* ── Main content card ── */}

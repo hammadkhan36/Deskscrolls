@@ -394,6 +394,8 @@ export default function NewSetup() {
   // const [categoryId, setCategoryId] = useState('')
   const [categoryIds, setCategoryIds] = useState<string[]>([])  // <-- change
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
+  const [primaryCategoryId, setPrimaryCategoryId] = useState<string>('') // primary category
+// categoryIds already hai: string[]
 
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [galleryFiles, setGalleryFiles] = useState<File[]>([])
@@ -441,6 +443,7 @@ export default function NewSetup() {
           owner_name: ownerName,
           short_intro: shortIntro,
           content,
+          category_id: primaryCategoryId || null,   // 👈 yeh naya
           cover_image_url: coverImageUrl,
           published: false,
           author_id: user.id,
@@ -503,6 +506,7 @@ export default function NewSetup() {
           short_intro: shortIntro,
           content,
           // category_id: categoryId || null,
+           category_id: primaryCategoryId || null,   // 👈 yeh naya
           cover_image_url: coverImageUrl,
           published: false,
           author_id: user.id,
@@ -601,6 +605,27 @@ export default function NewSetup() {
             onChange={setCategoryIds}
           />
         </div>
+
+        <div>
+  <label className="block text-sm font-medium mb-1">Primary Category</label>
+  <select
+    value={primaryCategoryId}
+    onChange={(e) => {
+      const val = e.target.value;
+      setPrimaryCategoryId(val);
+      // Auto-add to selected list if not already there
+      if (val && !categoryIds.includes(val)) {
+        setCategoryIds(prev => [...prev, val]);
+      }
+    }}
+    className="w-full border p-3 rounded-lg text-base bg-white"
+  >
+    <option value="">None</option>
+    {categories.map(cat => (
+      <option key={cat.id} value={cat.id}>{cat.name}</option>
+    ))}
+  </select>
+</div>
 
 
 
