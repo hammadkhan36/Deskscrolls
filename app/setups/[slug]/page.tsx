@@ -207,28 +207,60 @@ import Footer from '@/components/Footer'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createServerSupabase } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import EmbedRenderer from '@/components/EmbedRenderer'
 
 export const dynamic = 'force-dynamic'
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = await createServerSupabase()
+  const supabase = await createServerSupabaseClient()
 
+
+  // const { data: setup, error } = await supabase
+  // .from('setups')
+  // .select(`
+  //   *,
+  //   primary_category:categories(id, name, slug),
+  //   additional_categories:setup_categories(category:categories(id, name, slug)),
+  //   author:profiles(full_name, avatar_url),
+  //   setup_images(id, image_url, alt_text, sort_order)
+  // `)
+  // .eq('slug', slug)
+  // .eq('published', true)
+  // .single()
 
   const { data: setup, error } = await supabase
   .from('setups')
   .select(`
     *,
-    primary_category:categories(id, name, slug),
-    additional_categories:setup_categories(category:categories(id, name, slug)),
-    author:profiles(full_name, avatar_url),
-    setup_images(id, image_url, alt_text, sort_order)
+    primary_category:categories!setups_category_id_fkey(
+      id,
+      name,
+      slug
+    ),
+    setup_categories(
+      category:categories(
+        id,
+        name,
+        slug
+      )
+    ),
+    author:profiles(
+      full_name,
+      avatar_url
+    ),
+    setup_images(
+      id,
+      image_url,
+      alt_text,
+      sort_order
+    )
   `)
   .eq('slug', slug)
   .eq('published', true)
   .single()
+
 
   // const { data: setup, error } = await supabase
   //   .from('setups')
