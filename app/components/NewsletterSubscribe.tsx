@@ -60,9 +60,9 @@ export default function NewsletterSubscribe() {
           Real desk setups from designers, founders, and builders — delivered every Saturday.
         </p>
 
-        <p className="text-[13px] text-[#6B6B6B] mb-7">
+        {/* <p className="text-[13px] text-[#6B6B6B] mb-7">
           Join <span className="text-[#1E1E1E] font-medium">21,000+</span> readers
-        </p>
+        </p> */}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex max-w-md mx-auto">

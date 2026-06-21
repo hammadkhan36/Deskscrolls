@@ -75,8 +75,10 @@ export default function SubscribeSection({ variant = 'default' }: SubscribeSecti
             Like these setups? There are hundreds more.
           </h2>
           <p className="text-[#6B6B6B] text-[16px]">
-            Join <span className="text-[#1E1E1E] font-semibold">18,800+</span> creators — one new workspace every Saturday.
+            Join creators — one new workspace every Saturday.
           </p>
+                      {/* Join <span className="text-[#1E1E1E] font-semibold">18,800+</span> creators — one new workspace every Saturday. */}
+
           {Form}
           {Feedback}
         </div>
@@ -93,7 +95,7 @@ export default function SubscribeSection({ variant = 'default' }: SubscribeSecti
             Trusted by creators at
           </p>
           <h2 className="text-xl md:text-2xl font-semibold text-[#1E1E1E] leading-snug max-w-xl">
-            18,800+ readers from Google, Spotify, Meta, YouTube, and more.
+            Thousands of readers from Pinterest, Google, Spotify, Meta, YouTube, and more.
           </h2>
           {Form}
           {Feedback}
@@ -114,7 +116,7 @@ export default function SubscribeSection({ variant = 'default' }: SubscribeSecti
             >
               &ldquo;DeskScrolls is the new MTV Cribs.&rdquo;
             </p>
-            <p className="mt-3 text-sm text-[#6B6B6B]">— Sam DeBrule</p>
+            <p className="mt-3 text-sm text-[#6B6B6B]">— Habib Khan</p>
           </div>
           {Form}
           {Feedback}

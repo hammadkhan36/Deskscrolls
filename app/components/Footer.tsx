@@ -1,6 +1,8 @@
 
 import Link from 'next/link'
 import NewsletterForm from './NewsletterForm'
+import Image from 'next/image';
+
 
 export default function Footer() {
   return (
@@ -16,13 +18,22 @@ export default function Footer() {
           {/* Left: Wordmark, tagline, socials */}
           <div className="flex flex-col gap-4 max-w-xs">
             <Link href="/" className="flex items-center gap-0 select-none">
-              <span className="text-[17px] font-semibold tracking-[-0.3px] text-[#1E1E1E]">Desk</span>
+         <Image
+            src="/favicon.svg"          // public folder ke relative path
+            alt="Desk Setups Tour"
+            width={30}               // apne hisaab se set karein
+            height={30}
+            priority                  // agar above the fold hai to
+            className="cursor-pointer"
+          />
+        
+              {/* <span className="text-[17px] font-semibold tracking-[-0.3px] text-[#1E1E1E]">Desk</span>
               <span
                 className="text-[18px] italic text-[#BF6F4A]"
                 style={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 400 }}
               >
                 Scrolls
-              </span>
+              </span> */}
             </Link>
 
             <p className="text-[#6B6B6B] text-sm leading-relaxed">
@@ -73,7 +84,7 @@ export default function Footer() {
             <Link href="/setups" className="hover:text-[#D97742] transition-colors">Setups</Link>
             <Link href="/about"  className="hover:text-[#D97742] transition-colors">About</Link>
             <Link href="/submit" className="hover:text-[#D97742] transition-colors">Submit a workspace</Link>
-            <a    href="/rss"    className="hover:text-[#D97742] transition-colors">RSS</a>
+            {/* <a    href="/rss"    className="hover:text-[#D97742] transition-colors">RSS</a> */}
           </div>
 
           <div className="flex flex-col items-center gap-3 lg:flex-row lg:gap-5">
