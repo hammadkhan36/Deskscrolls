@@ -195,6 +195,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client'
 
 export default function Navbar() {
@@ -231,18 +232,58 @@ export default function Navbar() {
 
         {/* ── Wordmark ── */}
         <Link href="/" className="flex items-center gap-0 select-none">
-          <span
+         <Image
+            src="/favicon.svg"          // public folder ke relative path
+            alt="Desk Setups Tour"
+            width={40}               // apne hisaab se set karein
+            height={40}
+            priority                  // agar above the fold hai to
+            className="cursor-pointer"
+          />
+         {/* <Image
+            src="/D.svg"          // public folder ke relative path
+            alt="Desk Setups Tour"
+            width={80}               // apne hisaab se set karein
+            height={80}
+            priority                  // agar above the fold hai to
+            className="cursor-pointer"
+          /> */}
+         {/* <Image
+            src="/10.svg"          // public folder ke relative path
+            alt="Desk Setups Tour"
+            width={90}               // apne hisaab se set karein
+            height={90}
+            priority                  // agar above the fold hai to
+            className="cursor-pointer"
+          />
+         <Image
+            src="/6.svg"          // public folder ke relative path
+            alt="Desk Setups Tour"
+            width={90}               // apne hisaab se set karein
+            height={90}
+            priority                  // agar above the fold hai to
+            className="cursor-pointer"
+          />
+         <Image
+            src="/7.svg"          // public folder ke relative path
+            alt="Desk Setups Tour"
+            width={90}               // apne hisaab se set karein
+            height={90}
+            priority                  // agar above the fold hai to
+            className="cursor-pointer"
+          /> */}
+          {/* <span
             className="text-[17px] font-semibold tracking-[-0.3px] text-[#1E1E1E]"
             style={{ fontFamily: 'Inter, sans-serif' }}
           >
             Desk
-          </span>
-          <span
+          </span> */}
+          {/* <span
             className="text-[18px] italic text-[#BF6F4A]"
             style={{ fontFamily: '"Playfair Display", Georgia, serif', fontWeight: 400 }}
           >
-            Scrolls
-          </span>
+            DeskScrolls
+          </span> */}
         </Link>
 
         {/* ── Desktop links ── */}
