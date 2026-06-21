@@ -169,11 +169,11 @@ export default function Navbar() {
                 Subscribe
               </button>
             </Link>
-            <Link href="/login" onClick={() => setIsMenuOpen(false)} className="flex-1">
+            {/* <Link href="/login" onClick={() => setIsMenuOpen(false)} className="flex-1">
               <button className="w-full border border-[#E6E1D8] text-[#1E1E1E] font-semibold py-2.5 rounded-md text-[14px] hover:border-[#D97742] hover:text-[#D97742] transition-colors">
                 Login
               </button>
-            </Link>
+            </Link> */}
           </div>
         </div>
       )}
