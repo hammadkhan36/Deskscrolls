@@ -59,6 +59,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
    turbopack: {},
+   experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',  // allow image uploads up to 10 MB
+    },
+  },
   images: {
     remotePatterns: [
       {
