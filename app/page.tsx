@@ -143,7 +143,7 @@ export default function Home() {
       <SubscribeSection variant="social-proof" />
 
       {/* Testimonial */}
-      <SubscribeSection variant="testimonial" />
+      {/* <SubscribeSection variant="testimonial" /> */}
 
       <Footer />
     </main>
