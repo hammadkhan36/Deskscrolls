@@ -176,6 +176,7 @@ import Sidebar from '@/admin/Sidebar'
 const navLinks = [
   { href: '/admin', label: 'Dashboard', roles: ['admin', 'manager', 'author'] },
   { href: '/admin/posts', label: 'Posts', roles: ['admin', 'manager', 'author'] },
+   { href: '/admin/blogs', label: 'Blogs', roles: ['admin', 'manager', 'author'] },
   { href: '/admin/users', label: 'Users', roles: ['admin'] },
   { href: '/admin/categories', label: 'Categories', roles: ['admin', 'manager'] },
   { href: '/admin/submissions', label: 'Submissions', roles: ['admin', 'manager'] },
