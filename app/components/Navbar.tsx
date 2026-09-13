@@ -117,11 +117,11 @@ export default function Navbar() {
             </button>
           </Link>
 
-          <Link href="/login">
+          {/* <Link href="/login">
             <button className="text-[14px] font-semibold px-4 py-1.5 rounded-md border border-[#E6E1D8] text-[#1E1E1E] hover:border-[#D97742] hover:text-[#D97742] transition-colors bg-white">
               Login
             </button>
-          </Link>
+          </Link> */}
         </div>
 
         {/* ── Mobile hamburger ── */}
