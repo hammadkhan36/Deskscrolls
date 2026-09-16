@@ -49,38 +49,29 @@ export async function createBrand(formData: FormData) {
     .insert({
       name,
       slug,
-
       short_description: optionalText(
         formData.get('short_description')
       ),
-
       description: optionalText(
         formData.get('description')
       ),
-
       logo_url: optionalText(
         formData.get('logo_url')
       ),
-
       cover_image_url: optionalText(
         formData.get('cover_image_url')
       ),
-
       website_url: optionalText(
         formData.get('website_url')
       ),
-
       meta_title: optionalText(
         formData.get('meta_title')
       ),
-
       meta_description: optionalText(
         formData.get('meta_description')
       ),
-
       published,
       featured,
-
       published_at: published
         ? new Date().toISOString()
         : null,
