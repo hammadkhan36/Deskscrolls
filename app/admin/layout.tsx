@@ -26,6 +26,12 @@ const navLinks = [
 
   // Products ecosystem
   {
+  href: '/admin/products',
+  label: 'Products',
+  roles: ['admin', 'manager'],
+},
+  
+  {
     href: '/admin/brands',
     label: 'Brands',
     roles: ['admin', 'manager'],
