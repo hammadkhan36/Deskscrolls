@@ -16,10 +16,7 @@ export const metadata: Metadata = {
 
   applicationName: 'DeskScroll',
 
-  alternates: {
-    canonical: '/',
-  },
-
+  
   openGraph: {
     type: 'website',
     url: siteUrl,
