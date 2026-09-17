@@ -191,11 +191,13 @@ export default async function ProductPage({
       : undefined,
 
     brand: brand
-      ? {
-          '@type': 'Brand',
-          name: brand.name,
-        }
-      : undefined,
+  ? {
+      '@type': 'Brand',
+      name: brand.name,
+      url: `${siteUrl}/brands/${brand.slug}`,
+    }
+  : undefined,
+    
   }
 
   const breadcrumbJsonLd = {
@@ -346,10 +348,21 @@ export default async function ProductPage({
                 </div>
 
                 {brand && (
-                  <p className="text-sm uppercase tracking-wide text-gray-500 mb-2">
-                    {brand.name}
-                  </p>
-                )}
+  <Link
+    href={`/brands/${brand.slug}`}
+    className="inline-flex items-center gap-2 text-sm uppercase tracking-wide text-gray-500 mb-2 hover:text-black"
+  >
+    {brand.logo_url && (
+      <img
+        src={brand.logo_url}
+        alt=""
+        className="w-5 h-5 rounded object-contain"
+      />
+    )}
+
+    <span>{brand.name}</span>
+  </Link>
+)}
 
                 <h1 className="text-3xl sm:text-5xl font-bold tracking-tight leading-tight">
                   {product.name}
