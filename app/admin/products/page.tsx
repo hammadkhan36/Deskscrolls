@@ -123,11 +123,11 @@ export default async function ProductsPage() {
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap text-xs text-gray-500 mt-1">
-                      {product.brand && (
-                        <span>
-                          {product.brand.name}
-                        </span>
-                      )}
+                      {product.brand?.[0] && (
+  <span>
+    {product.brand[0].name}
+  </span>
+)}
 
                       {product.brand && (
                         <span>•</span>
