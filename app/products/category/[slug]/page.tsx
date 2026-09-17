@@ -372,10 +372,13 @@ export default async function ProductCategoryPage({
                     </div>
 
                     {product.brand && (
-                      <p className="text-xs uppercase tracking-wide text-gray-400 mb-1.5">
-                        {product.brand.name}
-                      </p>
-                    )}
+  <Link
+    href={`/brands/${product.brand.slug}`}
+    className="inline-block text-xs uppercase tracking-wide text-gray-400 mb-1.5 hover:text-black hover:underline"
+  >
+    {product.brand.name}
+  </Link>
+)}
 
                     <h2 className="text-lg font-semibold leading-snug">
                       <Link
