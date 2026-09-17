@@ -136,14 +136,40 @@ export default async function ProductCategoryPage({
     )
   }
 
+  /*
+   * Supabase currently infers nested product and brand
+   * relationships as arrays.
+   *
+   * Normalize both relationships here before rendering.
+   */
   const products =
     links
-      ?.map((link) => link.product)
+      ?.map((link) => {
+        const product =
+          link.product?.[0] || null
+
+        if (
+          !product ||
+          !product.published ||
+          product.deleted_at
+        ) {
+          return null
+        }
+
+        const brand =
+          product.brand?.[0] || null
+
+        return {
+          ...product,
+          brand,
+        }
+      })
       .filter(
-        (product) =>
-          product &&
-          product.published &&
-          !product.deleted_at
+        (
+          product
+        ): product is NonNullable<
+          typeof product
+        > => Boolean(product)
       )
       .sort((a, b) => {
         if (a.featured !== b.featured) {
@@ -151,11 +177,15 @@ export default async function ProductCategoryPage({
         }
 
         const aDate = a.published_at
-          ? new Date(a.published_at).getTime()
+          ? new Date(
+              a.published_at
+            ).getTime()
           : 0
 
         const bDate = b.published_at
-          ? new Date(b.published_at).getTime()
+          ? new Date(
+              b.published_at
+            ).getTime()
           : 0
 
         return bDate - aDate
@@ -233,7 +263,7 @@ export default async function ProductCategoryPage({
         {/* Breadcrumb */}
         <div className="border-b bg-white">
           <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
               <Link
                 href="/"
                 className="hover:text-black"
@@ -389,4 +419,4 @@ export default async function ProductCategoryPage({
       <Footer />
     </>
   )
-    }
+}
