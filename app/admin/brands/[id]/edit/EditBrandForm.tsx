@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   updateBrand,
   deleteBrand,
-} from './actions.ts'
+} from '@/app/admin/brands/[id]/edit/actions'
 
 type Brand = {
   id: string
