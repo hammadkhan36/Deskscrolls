@@ -2,7 +2,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { createProduct } from './actions'
+import {
+  createProduct,
+  updateProduct,
+  softDeleteProduct,
+} from './actions'
+import RichEditor from '@/admin/blogs/new/RichEditor'
 
 type Brand = {
   id: string
@@ -16,22 +21,62 @@ type Category = {
   sort_order: number
 }
 
+type InitialData = {
+  id?: string
+  name?: string
+  slug?: string
+  brand_id?: string | null
+  short_description?: string | null
+  content?: string | null
+  cover_image_url?: string | null
+  product_type?: string
+  price_text?: string | null
+  buy_url?: string | null
+  cta_text?: string | null
+  meta_title?: string | null
+  meta_description?: string | null
+  published?: boolean
+  featured?: boolean
+  sponsored?: boolean
+  category_ids?: string[]
+  primary_category_id?: string | null
+}
+
 export default function ProductForm({
   brands,
   categories,
+  initialData,
 }: {
   brands: Brand[]
   categories: Category[]
+  initialData?: InitialData
 }) {
+  const isEdit = !!initialData?.id
+
   const [loading, setLoading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [primaryCategory, setPrimaryCategory] = useState('')
+
+  const [content, setContent] = useState(
+    initialData?.content || ''
+  )
+
+  const [selectedCategories, setSelectedCategories] =
+    useState<string[]>(
+      initialData?.category_ids || []
+    )
+
+  const [primaryCategory, setPrimaryCategory] =
+    useState(
+      initialData?.primary_category_id || ''
+    )
 
   function toggleCategory(id: string) {
     setSelectedCategories((current) => {
       if (current.includes(id)) {
-        const next = current.filter((categoryId) => categoryId !== id)
+        const next = current.filter(
+          (categoryId) => categoryId !== id
+        )
 
         if (primaryCategory === id) {
           setPrimaryCategory(next[0] || '')
@@ -50,9 +95,13 @@ export default function ProductForm({
     })
   }
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(
+    formData: FormData
+  ) {
     setLoading(true)
     setError('')
+
+    formData.set('content', content)
 
     formData.delete('category_ids')
 
@@ -60,9 +109,18 @@ export default function ProductForm({
       formData.append('category_ids', id)
     })
 
-    formData.set('primary_category_id', primaryCategory)
+    formData.set(
+      'primary_category_id',
+      primaryCategory
+    )
 
-    const result = await createProduct(formData)
+    const result =
+      isEdit
+        ? await updateProduct(
+            initialData!.id!,
+            formData
+          )
+        : await createProduct(formData)
 
     if (result?.error) {
       setError(result.error)
@@ -70,8 +128,36 @@ export default function ProductForm({
     }
   }
 
+  async function handleDelete() {
+    if (!initialData?.id) return
+
+    const confirmed = window.confirm(
+      'Is product ko delete karna hai?'
+    )
+
+    if (!confirmed) return
+
+    setDeleting(true)
+    setError('')
+
+    const result = await softDeleteProduct(
+      initialData.id
+    )
+
+    if (result?.error) {
+      setError(result.error)
+      setDeleting(false)
+      return
+    }
+
+    window.location.href = '/admin/products'
+  }
+
   return (
-    <form action={handleSubmit} className="space-y-6">
+    <form
+      action={handleSubmit}
+      className="space-y-6"
+    >
       {/* Basic Information */}
       <section className="bg-white border rounded-xl p-6 shadow-sm">
         <h2 className="text-lg font-semibold mb-5">
@@ -87,6 +173,9 @@ export default function ProductForm({
             <input
               name="name"
               required
+              defaultValue={
+                initialData?.name || ''
+              }
               placeholder="e.g. Keychron Q1 Max"
               className="w-full border rounded-lg px-3 py-2.5"
             />
@@ -99,6 +188,9 @@ export default function ProductForm({
 
             <input
               name="slug"
+              defaultValue={
+                initialData?.slug || ''
+              }
               placeholder="keychron-q1-max"
               className="w-full border rounded-lg px-3 py-2.5"
             />
@@ -115,7 +207,9 @@ export default function ProductForm({
 
             <select
               name="brand_id"
-              defaultValue=""
+              defaultValue={
+                initialData?.brand_id || ''
+              }
               className="w-full border rounded-lg px-3 py-2.5 bg-white"
             >
               <option value="">
@@ -141,6 +235,10 @@ export default function ProductForm({
             <textarea
               name="short_description"
               rows={3}
+              defaultValue={
+                initialData?.short_description ||
+                ''
+              }
               placeholder="Short product summary used on cards and introductions."
               className="w-full border rounded-lg px-3 py-2.5"
             />
@@ -155,7 +253,8 @@ export default function ProductForm({
         </h2>
 
         <p className="text-sm text-gray-500 mt-1 mb-5">
-          Select all relevant categories and choose one primary category.
+          Select all relevant categories and
+          choose one primary category.
         </p>
 
         {categories.length === 0 ? (
@@ -165,7 +264,10 @@ export default function ProductForm({
         ) : (
           <div className="grid sm:grid-cols-2 gap-3">
             {categories.map((category) => {
-              const selected = selectedCategories.includes(category.id)
+              const selected =
+                selectedCategories.includes(
+                  category.id
+                )
 
               return (
                 <div
@@ -177,7 +279,11 @@ export default function ProductForm({
                       <input
                         type="checkbox"
                         checked={selected}
-                        onChange={() => toggleCategory(category.id)}
+                        onChange={() =>
+                          toggleCategory(
+                            category.id
+                          )
+                        }
                       />
 
                       <span className="text-sm">
@@ -190,8 +296,15 @@ export default function ProductForm({
                         <input
                           type="radio"
                           name="primary_category_ui"
-                          checked={primaryCategory === category.id}
-                          onChange={() => setPrimaryCategory(category.id)}
+                          checked={
+                            primaryCategory ===
+                            category.id
+                          }
+                          onChange={() =>
+                            setPrimaryCategory(
+                              category.id
+                            )
+                          }
                         />
 
                         Primary
@@ -219,7 +332,10 @@ export default function ProductForm({
 
             <select
               name="product_type"
-              defaultValue="affiliate"
+              defaultValue={
+                initialData?.product_type ||
+                'affiliate'
+              }
               required
               className="w-full border rounded-lg px-3 py-2.5 bg-white"
             >
@@ -235,10 +351,6 @@ export default function ProductForm({
                 Standard
               </option>
             </select>
-
-            <p className="text-xs text-gray-500 mt-1">
-              Type controls how DeskScroll treats the product, not its category.
-            </p>
           </div>
 
           <div>
@@ -248,6 +360,9 @@ export default function ProductForm({
 
             <input
               name="price_text"
+              defaultValue={
+                initialData?.price_text || ''
+              }
               placeholder="e.g. $199, From $99, Free"
               className="w-full border rounded-lg px-3 py-2.5"
             />
@@ -261,13 +376,12 @@ export default function ProductForm({
             <input
               type="url"
               name="buy_url"
+              defaultValue={
+                initialData?.buy_url || ''
+              }
               placeholder="https://..."
               className="w-full border rounded-lg px-3 py-2.5"
             />
-
-            <p className="text-xs text-gray-500 mt-1">
-              Affiliate link, official product page, or digital resource URL.
-            </p>
           </div>
 
           <div>
@@ -277,8 +391,10 @@ export default function ProductForm({
 
             <input
               name="cta_text"
-              defaultValue="View Product"
-              placeholder="View Product"
+              defaultValue={
+                initialData?.cta_text ||
+                'View Product'
+              }
               className="w-full border rounded-lg px-3 py-2.5"
             />
           </div>
@@ -299,6 +415,10 @@ export default function ProductForm({
           <input
             type="url"
             name="cover_image_url"
+            defaultValue={
+              initialData?.cover_image_url ||
+              ''
+            }
             placeholder="https://..."
             className="w-full border rounded-lg px-3 py-2.5"
           />
@@ -312,25 +432,21 @@ export default function ProductForm({
         </h2>
 
         <p className="text-sm text-gray-500 mt-1 mb-4">
-          Paste rich HTML generated for the product. This can contain
-          specifications, features, pros and cons, compatibility, buying
-          notes, tables and FAQs.
+          Add specifications, features,
+          pros and cons, compatibility,
+          buying notes, tables and FAQs.
         </p>
 
-        <textarea
-          name="content"
-          rows={18}
-          placeholder={`<h2>Overview</h2>
-<p>Product details...</p>
-
-<h2>Specifications</h2>
-<table>...</table>`}
-          className="w-full border rounded-lg px-3 py-3 font-mono text-sm"
+        <RichEditor
+          value={content}
+          onChange={setContent}
         />
 
-        <p className="text-xs text-gray-500 mt-2">
-          HTML preview/editor will be added as a reusable content editor later.
-        </p>
+        <input
+          type="hidden"
+          name="content"
+          value={content}
+        />
       </section>
 
       {/* SEO */}
@@ -347,6 +463,9 @@ export default function ProductForm({
 
             <input
               name="meta_title"
+              defaultValue={
+                initialData?.meta_title || ''
+              }
               placeholder="SEO title"
               className="w-full border rounded-lg px-3 py-2.5"
             />
@@ -360,6 +479,10 @@ export default function ProductForm({
             <textarea
               name="meta_description"
               rows={3}
+              defaultValue={
+                initialData?.meta_description ||
+                ''
+              }
               placeholder="SEO description"
               className="w-full border rounded-lg px-3 py-2.5"
             />
@@ -378,6 +501,10 @@ export default function ProductForm({
             <input
               type="checkbox"
               name="published"
+              defaultChecked={
+                initialData?.published ??
+                false
+              }
               className="mt-1"
             />
 
@@ -387,7 +514,8 @@ export default function ProductForm({
               </p>
 
               <p className="text-xs text-gray-500">
-                Make this product publicly available.
+                Make this product publicly
+                available.
               </p>
             </div>
           </label>
@@ -396,6 +524,10 @@ export default function ProductForm({
             <input
               type="checkbox"
               name="featured"
+              defaultChecked={
+                initialData?.featured ??
+                false
+              }
               className="mt-1"
             />
 
@@ -405,7 +537,8 @@ export default function ProductForm({
               </p>
 
               <p className="text-xs text-gray-500">
-                Allow this product to appear in featured sections.
+                Allow this product to appear
+                in featured sections.
               </p>
             </div>
           </label>
@@ -414,6 +547,10 @@ export default function ProductForm({
             <input
               type="checkbox"
               name="sponsored"
+              defaultChecked={
+                initialData?.sponsored ??
+                false
+              }
               className="mt-1"
             />
 
@@ -423,7 +560,8 @@ export default function ProductForm({
               </p>
 
               <p className="text-xs text-gray-500">
-                Mark this product as sponsored content.
+                Mark this product as
+                sponsored content.
               </p>
             </div>
           </label>
@@ -436,13 +574,17 @@ export default function ProductForm({
         </div>
       )}
 
-      <div className="flex items-center gap-3 pb-8">
+      <div className="flex flex-wrap items-center gap-3 pb-8">
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || deleting}
           className="bg-black text-white px-5 py-2.5 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50"
         >
-          {loading ? 'Saving...' : 'Create Product'}
+          {loading
+            ? 'Saving...'
+            : isEdit
+              ? 'Update Product'
+              : 'Create Product'}
         </button>
 
         <Link
@@ -451,7 +593,20 @@ export default function ProductForm({
         >
           Cancel
         </Link>
+
+        {isEdit && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={loading || deleting}
+            className="border border-red-200 text-red-600 px-5 py-2.5 rounded-lg text-sm hover:bg-red-50 disabled:opacity-50 sm:ml-auto"
+          >
+            {deleting
+              ? 'Deleting...'
+              : 'Delete Product'}
+          </button>
+        )}
       </div>
     </form>
   )
-}
+      }
