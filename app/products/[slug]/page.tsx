@@ -137,16 +137,36 @@ export default async function ProductPage({
     notFound()
   }
 
-  const primaryCategory =
-    product.product_category_links?.find(
+  // Supabase currently infers these joined relations as arrays.
+  // Normalize them before using them in the UI.
+  const brand =
+    product.brand?.[0] || null
+
+  const categoryLinks =
+    product.product_category_links || []
+
+  const primaryLink =
+    categoryLinks.find(
       (link) => link.is_primary
-    )?.category || null
+    )
+
+  const primaryCategory =
+    primaryLink?.category?.[0] || null
 
   const otherCategories =
-    product.product_category_links
-      ?.filter((link) => !link.is_primary)
-      .map((link) => link.category)
-      .filter(Boolean) || []
+    categoryLinks
+      .filter((link) => !link.is_primary)
+      .map(
+        (link) =>
+          link.category?.[0] || null
+      )
+      .filter(
+        (
+          category
+        ): category is NonNullable<
+          typeof category
+        > => Boolean(category)
+      )
 
   const siteUrl = 'https://deskscroll.com'
 
@@ -170,10 +190,10 @@ export default async function ProductPage({
       ? [product.cover_image_url]
       : undefined,
 
-    brand: product.brand
+    brand: brand
       ? {
           '@type': 'Brand',
-          name: product.brand.name,
+          name: brand.name,
         }
       : undefined,
   }
@@ -201,6 +221,7 @@ export default async function ProductPage({
               '@type': 'ListItem',
               position: 3,
               name: primaryCategory.name,
+              item: `${siteUrl}/products/category/${primaryCategory.slug}`,
             },
           ]
         : []),
@@ -258,9 +279,12 @@ export default async function ProductPage({
                 <>
                   <span>/</span>
 
-                  <span>
+                  <Link
+                    href={`/products/category/${primaryCategory.slug}`}
+                    className="hover:text-black"
+                  >
                     {primaryCategory.name}
-                  </span>
+                  </Link>
                 </>
               )}
 
@@ -296,13 +320,16 @@ export default async function ProductPage({
                 </div>
               </div>
 
-              {/* Product information */}
+              {/* Product Information */}
               <div>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {primaryCategory && (
-                    <span className="text-xs border rounded-full px-2.5 py-1 text-gray-600">
+                    <Link
+                      href={`/products/category/${primaryCategory.slug}`}
+                      className="text-xs border rounded-full px-2.5 py-1 text-gray-600 hover:border-gray-400 hover:text-black"
+                    >
                       {primaryCategory.name}
-                    </span>
+                    </Link>
                   )}
 
                   {product.featured && (
@@ -318,9 +345,9 @@ export default async function ProductPage({
                   )}
                 </div>
 
-                {product.brand && (
+                {brand && (
                   <p className="text-sm uppercase tracking-wide text-gray-500 mb-2">
-                    {product.brand.name}
+                    {brand.name}
                   </p>
                 )}
 
@@ -355,6 +382,7 @@ export default async function ProductPage({
                     >
                       {product.cta_text ||
                         'View Product'}
+
                       <span className="ml-2">
                         ↗
                       </span>
@@ -382,12 +410,13 @@ export default async function ProductPage({
                     <div className="flex flex-wrap gap-2">
                       {otherCategories.map(
                         (category) => (
-                          <span
+                          <Link
                             key={category.id}
-                            className="text-sm text-gray-600"
+                            href={`/products/category/${category.slug}`}
+                            className="text-sm border rounded-full px-3 py-1.5 text-gray-600 hover:text-black hover:border-gray-400"
                           >
                             {category.name}
-                          </span>
+                          </Link>
                         )
                       )}
                     </div>
@@ -398,7 +427,7 @@ export default async function ProductPage({
           </div>
         </section>
 
-        {/* Rich product content */}
+        {/* Rich Product Content */}
         {product.content && (
           <section className="border-t">
             <div className="max-w-4xl mx-auto px-4 py-12 sm:py-16">
@@ -443,6 +472,7 @@ export default async function ProductPage({
                 >
                   {product.cta_text ||
                     'View Product'}
+
                   <span className="ml-2">
                     ↗
                   </span>
@@ -456,4 +486,4 @@ export default async function ProductPage({
       <Footer />
     </>
   )
-    }
+        }
