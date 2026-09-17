@@ -177,13 +177,21 @@ export default async function ProductsPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((product) => {
+                /*
+                 * Supabase is currently inferring these
+                 * nested relationships as arrays.
+                 * Normalize them before rendering.
+                 */
                 const primaryLink =
                   product.product_category_links?.find(
                     (link) => link.is_primary
                   )
 
                 const primaryCategory =
-                  primaryLink?.category
+                  primaryLink?.category?.[0] || null
+
+                const brand =
+                  product.brand?.[0] || null
 
                 return (
                   <article
@@ -233,9 +241,9 @@ export default async function ProductsPage() {
                         )}
                       </div>
 
-                      {product.brand && (
+                      {brand && (
                         <p className="text-xs uppercase tracking-wide text-gray-400 mb-1.5">
-                          {product.brand.name}
+                          {brand.name}
                         </p>
                       )}
 
