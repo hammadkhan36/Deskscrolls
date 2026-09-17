@@ -18,45 +18,71 @@ export const metadata: Metadata = {
 export default async function ProductsPage() {
   const supabase = await createServerSupabase()
 
-  const { data: products, error } = await supabase
-    .from('products')
-    .select(`
-      id,
-      name,
-      slug,
-      short_description,
-      cover_image_url,
-      product_type,
-      price_text,
-      featured,
-      sponsored,
-      brand:brands (
+  const [
+    { data: products, error: productsError },
+    { data: categories, error: categoriesError },
+  ] = await Promise.all([
+    supabase
+      .from('products')
+      .select(`
         id,
         name,
-        slug
-      ),
-      product_category_links (
-        is_primary,
-        category:product_categories (
+        slug,
+        short_description,
+        cover_image_url,
+        product_type,
+        price_text,
+        featured,
+        sponsored,
+        brand:brands (
           id,
           name,
           slug
+        ),
+        product_category_links (
+          is_primary,
+          category:product_categories (
+            id,
+            name,
+            slug
+          )
         )
-      )
-    `)
-    .eq('published', true)
-    .is('deleted_at', null)
-    .order('featured', {
-      ascending: false,
-    })
-    .order('published_at', {
-      ascending: false,
-    })
+      `)
+      .eq('published', true)
+      .is('deleted_at', null)
+      .order('featured', {
+        ascending: false,
+      })
+      .order('published_at', {
+        ascending: false,
+      }),
 
-  if (error) {
+    supabase
+      .from('product_categories')
+      .select(`
+        id,
+        name,
+        slug,
+        description,
+        parent_id,
+        sort_order
+      `)
+      .eq('published', true)
+      .order('sort_order')
+      .order('name'),
+  ])
+
+  if (productsError) {
     console.error(
       'Failed to load products:',
-      error.message
+      productsError.message
+    )
+  }
+
+  if (categoriesError) {
+    console.error(
+      'Failed to load product categories:',
+      categoriesError.message
     )
   }
 
@@ -65,6 +91,7 @@ export default async function ProductsPage() {
       <Navbar />
 
       <main className="min-h-screen">
+        {/* Hero */}
         <section className="border-b bg-white">
           <div className="max-w-7xl mx-auto px-4 py-14 sm:py-20">
             <p className="text-sm font-medium text-gray-500 mb-3">
@@ -84,7 +111,57 @@ export default async function ProductsPage() {
           </div>
         </section>
 
+        {/* Category Navigation */}
+        {categories && categories.length > 0 && (
+          <section className="border-b bg-white">
+            <div className="max-w-7xl mx-auto px-4 py-7">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h2 className="font-semibold">
+                    Browse categories
+                  </h2>
+
+                  <p className="text-sm text-gray-500 mt-1">
+                    Find products by workspace category.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-2.5 overflow-x-auto pb-2">
+                {categories.map((category) => (
+                  <Link
+                    key={category.id}
+                    href={`/products/category/${category.slug}`}
+                    className="shrink-0 border rounded-full px-4 py-2 text-sm bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                  >
+                    {category.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Product Listing */}
         <section className="max-w-7xl mx-auto px-4 py-10 sm:py-14">
+          <div className="flex items-end justify-between gap-4 mb-7">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-semibold">
+                Explore products
+              </h2>
+
+              {products && products.length > 0 && (
+                <p className="text-sm text-gray-500 mt-1">
+                  {products.length}{' '}
+                  {products.length === 1
+                    ? 'product'
+                    : 'products'}{' '}
+                  available
+                </p>
+              )}
+            </div>
+          </div>
+
           {!products?.length ? (
             <div className="border rounded-2xl p-10 text-center bg-white">
               <h2 className="font-semibold text-lg">
@@ -120,9 +197,7 @@ export default async function ProductsPage() {
                       <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
                         {product.cover_image_url ? (
                           <img
-                            src={
-                              product.cover_image_url
-                            }
+                            src={product.cover_image_url}
                             alt={product.name}
                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                           />
@@ -137,9 +212,12 @@ export default async function ProductsPage() {
                     <div className="p-5">
                       <div className="flex flex-wrap items-center gap-2 mb-3">
                         {primaryCategory && (
-                          <span className="text-xs text-gray-500">
+                          <Link
+                            href={`/products/category/${primaryCategory.slug}`}
+                            className="text-xs text-gray-500 hover:text-black"
+                          >
                             {primaryCategory.name}
-                          </span>
+                          </Link>
                         )}
 
                         {product.sponsored && (
@@ -161,14 +239,14 @@ export default async function ProductsPage() {
                         </p>
                       )}
 
-                      <h2 className="text-lg font-semibold leading-snug">
+                      <h3 className="text-lg font-semibold leading-snug">
                         <Link
                           href={`/products/${product.slug}`}
                           className="hover:underline"
                         >
                           {product.name}
                         </Link>
-                      </h2>
+                      </h3>
 
                       {product.short_description && (
                         <p className="text-sm text-gray-600 mt-2 line-clamp-2 leading-6">
