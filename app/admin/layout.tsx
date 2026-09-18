@@ -30,6 +30,12 @@ const navLinks = [
   label: 'Products',
   roles: ['admin', 'manager'],
 },
+
+  {
+  href: '/admin/product-categories',
+  label: 'Product Categories',
+  roles: ['admin', 'manager'],
+},
   
   {
     href: '/admin/brands',
