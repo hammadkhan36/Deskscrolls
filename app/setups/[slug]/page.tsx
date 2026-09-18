@@ -74,12 +74,15 @@ export async function generateMetadata({
     }
   }
 
-  const title = `${setup.owner_name}'s Desk Setup`
+  const title =
+  setup.meta_title?.trim() ||
+  `${setup.owner_name}'s Desk Setup`
 
-  const description =
-    setup.short_intro ||
-    `Explore ${setup.owner_name}'s desk setup, workspace inspiration, gear, and desk ideas on DeskScroll.`
-
+const description =
+  setup.meta_description?.trim() ||
+  setup.short_intro?.trim() ||
+  `Explore ${setup.owner_name}'s desk setup, workspace inspiration, gear, and desk ideas on DeskScroll.`
+  
   const canonicalUrl = `/setups/${setup.slug}`
 
   const images = setup.cover_image_url
@@ -156,10 +159,14 @@ export default async function SetupPage({ params }: PageProps) {
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: `${setup.owner_name}'s Desk Setup`,
-    description:
-      setup.short_intro ||
-      `Explore ${setup.owner_name}'s desk setup on DeskScroll.`,
+    headline:
+  setup.meta_title?.trim() ||
+  `${setup.owner_name}'s Desk Setup`,
+
+description:
+  setup.meta_description?.trim() ||
+  setup.short_intro?.trim() ||
+  `Explore ${setup.owner_name}'s desk setup on DeskScroll.`,
     url: setupUrl,
     mainEntityOfPage: setupUrl,
     ...(setup.cover_image_url && {
