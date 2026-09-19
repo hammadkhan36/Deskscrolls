@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState } from 'react'
@@ -68,7 +67,7 @@ export default function EditBrandForm({
   return (
     <form action={handleUpdate} className="space-y-6">
 
-      <section className="bg-white border rounded-xl p-6 shadow-sm">
+      <section className="bg-white border rounded-xl p-4 sm:p-6 shadow-sm">
         <h2 className="font-semibold text-lg mb-5">
           Basic Information
         </h2>
@@ -83,7 +82,7 @@ export default function EditBrandForm({
               name="name"
               required
               defaultValue={brand.name}
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
             />
           </div>
 
@@ -96,7 +95,7 @@ export default function EditBrandForm({
               name="slug"
               required
               defaultValue={brand.slug}
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
             />
 
             <p className="text-xs text-gray-500 mt-1">
@@ -113,7 +112,7 @@ export default function EditBrandForm({
               name="short_description"
               rows={3}
               defaultValue={brand.short_description || ''}
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
             />
           </div>
 
@@ -126,13 +125,13 @@ export default function EditBrandForm({
               name="description"
               rows={8}
               defaultValue={brand.description || ''}
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
             />
           </div>
         </div>
       </section>
 
-      <section className="bg-white border rounded-xl p-6 shadow-sm">
+      <section className="bg-white border rounded-xl p-4 sm:p-6 shadow-sm">
         <h2 className="font-semibold text-lg mb-5">
           Media & Website
         </h2>
@@ -148,7 +147,7 @@ export default function EditBrandForm({
               name="logo_url"
               defaultValue={brand.logo_url || ''}
               placeholder="https://..."
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
             />
           </div>
 
@@ -162,7 +161,7 @@ export default function EditBrandForm({
               name="cover_image_url"
               defaultValue={brand.cover_image_url || ''}
               placeholder="https://..."
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
             />
           </div>
 
@@ -176,13 +175,13 @@ export default function EditBrandForm({
               name="website_url"
               defaultValue={brand.website_url || ''}
               placeholder="https://..."
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
             />
           </div>
         </div>
       </section>
 
-      <section className="bg-white border rounded-xl p-6 shadow-sm">
+      <section className="bg-white border rounded-xl p-4 sm:p-6 shadow-sm">
         <h2 className="font-semibold text-lg mb-5">
           SEO
         </h2>
@@ -196,7 +195,7 @@ export default function EditBrandForm({
             <input
               name="meta_title"
               defaultValue={brand.meta_title || ''}
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
             />
           </div>
 
@@ -209,19 +208,19 @@ export default function EditBrandForm({
               name="meta_description"
               rows={3}
               defaultValue={brand.meta_description || ''}
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
             />
           </div>
         </div>
       </section>
 
-      <section className="bg-white border rounded-xl p-6 shadow-sm">
+      <section className="bg-white border rounded-xl p-4 sm:p-6 shadow-sm">
         <h2 className="font-semibold text-lg mb-5">
           Publishing
         </h2>
 
         <div className="space-y-4">
-          <label className="flex items-start gap-3 cursor-pointer">
+          <label className="flex min-h-12 cursor-pointer items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
             <input
               type="checkbox"
               name="published"
@@ -240,7 +239,7 @@ export default function EditBrandForm({
             </div>
           </label>
 
-          <label className="flex items-start gap-3 cursor-pointer">
+          <label className="flex min-h-12 cursor-pointer items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
             <input
               type="checkbox"
               name="featured"
@@ -267,29 +266,27 @@ export default function EditBrandForm({
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-8">
-        <div className="flex items-center gap-3">
-          <button
-            type="submit"
-            disabled={loading || deleting}
-            className="bg-black text-white px-5 py-2.5 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50"
-          >
-            {loading ? 'Saving...' : 'Save Changes'}
-          </button>
+      <div className="sticky bottom-0 z-20 -mx-3 flex flex-wrap gap-2 border-t border-slate-200 bg-white/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:pb-8 sm:shadow-none">
+        <button
+          type="submit"
+          disabled={loading || deleting}
+          className="min-h-11 flex-1 rounded-lg bg-black px-5 font-medium text-white disabled:opacity-50 sm:flex-none"
+        >
+          {loading ? 'Saving...' : 'Save Changes'}
+        </button>
 
-          <Link
-            href="/admin/brands"
-            className="border px-5 py-2.5 rounded-lg text-sm hover:bg-gray-50"
-          >
-            Cancel
-          </Link>
-        </div>
+        <Link
+          href="/admin/brands"
+          className="inline-flex min-h-11 flex-1 items-center justify-center rounded-lg border px-5 text-sm sm:flex-none"
+        >
+          Cancel
+        </Link>
 
         <button
           type="button"
           onClick={handleDelete}
           disabled={loading || deleting}
-          className="text-red-600 border border-red-200 px-4 py-2.5 rounded-lg text-sm hover:bg-red-50 disabled:opacity-50"
+          className="min-h-11 w-full rounded-lg border border-red-200 px-4 text-sm text-red-600 disabled:opacity-50 sm:ml-auto sm:w-auto"
         >
           {deleting ? 'Deleting...' : 'Delete Brand'}
         </button>
