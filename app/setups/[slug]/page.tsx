@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import EmbedRenderer from '@/components/EmbedRenderer'
+import ProductsInSetup from '@/components/ProductsInSetup'
 
 export const dynamic = 'force-dynamic'
 
@@ -310,6 +311,8 @@ description:
               </section>
             )}
           </article>
+
+          <ProductsInSetup setupId={setup.id} />
 
           <div className="bg-[#F5EDE4] border border-[#E6E1D8] rounded-xl p-6 text-center mb-6">
             <p className="text-[#1E1E1E] font-medium mb-1">

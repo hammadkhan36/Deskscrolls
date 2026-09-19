@@ -7,7 +7,7 @@ const ts = require('typescript')
 function load(relative, mocks = {}) {
   const source = fs.readFileSync(path.join(__dirname, '..', relative), 'utf8')
   const { outputText } = ts.transpileModule(source, {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX },
   })
   const module = { exports: {} }
   new Function('require', 'module', 'exports', outputText)(
@@ -155,4 +155,79 @@ test('server action validates UUIDs and selection size before writes', async () 
   }
   assert.ok((await action.saveSetupProducts('invalid', [])).error)
   assert.equal(action.saves(), 0)
+})
+
+test('product options load all pages and exclude soft deletions', async () => {
+  const ranges = []
+  const filters = []
+  const page = Array.from({ length: 500 }, (_, i) => ({ id: String(i), name: `Product ${i}`, published: true }))
+  const client = { from(table) {
+    assert.equal(table, 'products')
+    const chain = {
+      select() { return chain }, order() { return chain },
+      is(...args) { filters.push(args); return chain },
+      range: async (start, end) => {
+        ranges.push([start, end])
+        return { data: start === 0 ? page : [{ id: 'last', name: 'Last', published: false }], error: null }
+      },
+    }
+    return chain
+  } }
+  const action = load('app/admin/setup-product-actions.ts', {
+    'next/cache': {}, '@/lib/auth': { getAdminUser: async () => ({ id: 'admin' }) },
+    '@/lib/supabase/server': { createServerSupabaseActionClient: async () => client },
+    '@/lib/setup-products': {},
+  })
+  const result = await action.getSetupProductOptions()
+  assert.equal(result.products.length, 501)
+  assert.deepEqual(ranges, [[0, 499], [500, 999]])
+  assert.deepEqual(filters, [['deleted_at', null], ['deleted_at', null]])
+})
+
+function publicComponent(response) {
+  const React = require('react')
+  const filters = []
+  const orders = []
+  const chain = {
+    select() { return chain },
+    eq(...args) { filters.push(['eq', ...args]); return chain },
+    is(...args) { filters.push(['is', ...args]); return chain },
+    order(...args) { orders.push(args); return chain },
+    returns: async () => response,
+  }
+  const component = load('app/components/ProductsInSetup.tsx', {
+    'next/link': { default: ({ children, ...props }) => React.createElement('a', props, children) },
+    '@/lib/supabase/server': { createServerSupabaseClient: async () => ({ from: () => chain }) },
+    '@/components/SetupProductImage': { default: ({ src, name }) => src
+      ? React.createElement('img', { src, alt: name }) : React.createElement('span', null, 'No image available') },
+  })
+  return { ...component, filters, orders }
+}
+
+test('public query explicitly filters publication/deletion even for logged-in visitors', async () => {
+  const component = publicComponent({ data: [], error: null })
+  await component.default({ setupId: 'setup' })
+  assert.deepEqual(component.filters, [
+    ['eq', 'setup_id', 'setup'], ['eq', 'product.published', true], ['is', 'product.deleted_at', null],
+  ])
+  assert.deepEqual(component.orders, [['sort_order', { ascending: true, nullsFirst: false }], ['product_id']])
+})
+
+test('public cards link products, escape notes, show price and omit an empty section', () => {
+  const React = require('react')
+  const { renderToStaticMarkup } = require('react-dom/server')
+  const { SetupProductCards } = publicComponent({ data: [], error: null })
+  assert.equal(renderToStaticMarkup(React.createElement(SetupProductCards, { items: [] })), '')
+  const html = renderToStaticMarkup(React.createElement(SetupProductCards, { items: [{
+    sort_order: 0, notes: '<script>unsafe</script>', product: {
+      id: 'one', slug: 'keyboard', name: 'Keyboard', short_description: 'Quiet keys',
+      cover_image_url: null, price_text: '$100', sponsored: true,
+    },
+  }] }))
+  assert.match(html, /Products in this Setup/)
+  assert.match(html, /href="\/products\/keyboard"/)
+  assert.match(html, /No image available/)
+  assert.match(html, /\$100/)
+  assert.match(html, /Sponsored/)
+  assert.doesNotMatch(html, /<script>/)
 })
