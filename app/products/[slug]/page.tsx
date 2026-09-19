@@ -567,7 +567,6 @@
 
 
 
-
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -577,6 +576,7 @@ import { createServerSupabase } from '@/lib/supabase/server'
 import ProductSetups, {
   type ProductSetup,
 } from '@/components/products/ProductSetups'
+import BrandArtwork from '@/components/BrandArtwork'
 
 export const revalidate = 300
 
@@ -973,13 +973,13 @@ export default async function ProductPage({
                     href={`/brands/${brand.slug}`}
                     className="inline-flex items-center gap-2 text-sm uppercase tracking-wide text-gray-500 mb-2 hover:text-black"
                   >
-                    {brand.logo_url && (
-                      <img
-                        src={brand.logo_url}
-                        alt=""
-                        className="w-5 h-5 rounded object-contain"
-                      />
-                    )}
+                    <BrandArtwork
+                      name={brand.name}
+                      imageUrl={brand.logo_url}
+                      variant="logo"
+                      sizes="20px"
+                      className="h-5 w-5 rounded"
+                    />
 
                     <span>{brand.name}</span>
                   </Link>
@@ -1124,4 +1124,3 @@ export default async function ProductPage({
     </>
   )
 }
-
