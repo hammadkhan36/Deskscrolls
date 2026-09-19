@@ -1,8 +1,11 @@
+
+
 // 'use client'
 
 // import { useState } from 'react'
 // import Link from 'next/link'
 // import { createBrand } from './actions'
+// import BrandImageUploadField from '../BrandImageUploadField'
 
 // export default function BrandForm() {
 //   const [loading, setLoading] = useState(false)
@@ -24,7 +27,7 @@
 //     <form action={handleSubmit} className="space-y-6">
 
 //       {/* Basic information */}
-//       <section className="bg-white border rounded-xl p-6 shadow-sm">
+//       <section className="bg-white border rounded-xl p-4 sm:p-6 shadow-sm">
 //         <h2 className="font-semibold text-lg mb-5">
 //           Basic Information
 //         </h2>
@@ -39,7 +42,7 @@
 //               name="name"
 //               required
 //               placeholder="e.g. Logitech"
-//               className="w-full border rounded-lg px-3 py-2.5"
+//               className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
 //             />
 //           </div>
 
@@ -51,7 +54,7 @@
 //             <input
 //               name="slug"
 //               placeholder="logitech"
-//               className="w-full border rounded-lg px-3 py-2.5"
+//               className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
 //             />
 
 //             <p className="text-xs text-gray-500 mt-1">
@@ -68,7 +71,7 @@
 //               name="short_description"
 //               rows={3}
 //               placeholder="Short introduction to the brand."
-//               className="w-full border rounded-lg px-3 py-2.5"
+//               className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
 //             />
 //           </div>
 
@@ -81,14 +84,14 @@
 //               name="description"
 //               rows={8}
 //               placeholder="Detailed information about the brand..."
-//               className="w-full border rounded-lg px-3 py-2.5"
+//               className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
 //             />
 //           </div>
 //         </div>
 //       </section>
 
 //       {/* Images and website */}
-//       <section className="bg-white border rounded-xl p-6 shadow-sm">
+//       <section className="bg-white border rounded-xl p-4 sm:p-6 shadow-sm">
 //         <h2 className="font-semibold text-lg mb-5">
 //           Media & Website
 //         </h2>
@@ -103,7 +106,7 @@
 //               type="url"
 //               name="logo_url"
 //               placeholder="https://..."
-//               className="w-full border rounded-lg px-3 py-2.5"
+//               className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
 //             />
 //           </div>
 
@@ -116,7 +119,7 @@
 //               type="url"
 //               name="cover_image_url"
 //               placeholder="https://..."
-//               className="w-full border rounded-lg px-3 py-2.5"
+//               className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
 //             />
 //           </div>
 
@@ -129,14 +132,14 @@
 //               type="url"
 //               name="website_url"
 //               placeholder="https://www.logitech.com"
-//               className="w-full border rounded-lg px-3 py-2.5"
+//               className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
 //             />
 //           </div>
 //         </div>
 //       </section>
 
 //       {/* SEO */}
-//       <section className="bg-white border rounded-xl p-6 shadow-sm">
+//       <section className="bg-white border rounded-xl p-4 sm:p-6 shadow-sm">
 //         <h2 className="font-semibold text-lg mb-5">
 //           SEO
 //         </h2>
@@ -150,7 +153,7 @@
 //             <input
 //               name="meta_title"
 //               placeholder="Logitech Products & Desk Setup Gear"
-//               className="w-full border rounded-lg px-3 py-2.5"
+//               className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
 //             />
 //           </div>
 
@@ -163,20 +166,20 @@
 //               name="meta_description"
 //               rows={3}
 //               placeholder="SEO description..."
-//               className="w-full border rounded-lg px-3 py-2.5"
+//               className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
 //             />
 //           </div>
 //         </div>
 //       </section>
 
 //       {/* Publishing */}
-//       <section className="bg-white border rounded-xl p-6 shadow-sm">
+//       <section className="bg-white border rounded-xl p-4 sm:p-6 shadow-sm">
 //         <h2 className="font-semibold text-lg mb-5">
 //           Publishing
 //         </h2>
 
 //         <div className="space-y-4">
-//           <label className="flex items-start gap-3 cursor-pointer">
+//           <label className="flex min-h-12 cursor-pointer items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
 //             <input
 //               type="checkbox"
 //               name="published"
@@ -194,7 +197,7 @@
 //             </div>
 //           </label>
 
-//           <label className="flex items-start gap-3 cursor-pointer">
+//           <label className="flex min-h-12 cursor-pointer items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
 //             <input
 //               type="checkbox"
 //               name="featured"
@@ -220,18 +223,18 @@
 //         </div>
 //       )}
 
-//       <div className="flex items-center gap-3 pb-8">
+//       <div className="sticky bottom-0 z-20 -mx-3 flex gap-2 border-t border-slate-200 bg-white/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:pb-8 sm:shadow-none">
 //         <button
 //           type="submit"
 //           disabled={loading}
-//           className="bg-black text-white px-5 py-2.5 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50"
+//           className="min-h-11 flex-1 rounded-lg bg-black px-5 py-2.5 font-medium text-white hover:bg-gray-800 disabled:opacity-50 sm:flex-none"
 //         >
 //           {loading ? 'Saving...' : 'Create Brand'}
 //         </button>
 
 //         <Link
 //           href="/admin/brands"
-//           className="border px-5 py-2.5 rounded-lg text-sm hover:bg-gray-50"
+//           className="inline-flex min-h-11 flex-1 items-center justify-center rounded-lg border px-5 py-2.5 text-sm hover:bg-gray-50 sm:flex-none"
 //         >
 //           Cancel
 //         </Link>
@@ -239,7 +242,11 @@
 
 //     </form>
 //   )
-//           }
+// }
+
+
+
+
 
 
 
@@ -250,6 +257,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createBrand } from './actions'
+import BrandImageUploadField from '../BrandImageUploadField'
 
 export default function BrandForm() {
   const [loading, setLoading] = useState(false)
@@ -341,31 +349,17 @@ export default function BrandForm() {
         </h2>
 
         <div className="grid gap-5">
-          <div>
-            <label className="block text-sm font-medium mb-1.5">
-              Logo URL
-            </label>
+          <BrandImageUploadField
+            name="logo_url"
+            label="Brand Logo"
+            kind="logo"
+          />
 
-            <input
-              type="url"
-              name="logo_url"
-              placeholder="https://..."
-              className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1.5">
-              Cover Image URL
-            </label>
-
-            <input
-              type="url"
-              name="cover_image_url"
-              placeholder="https://..."
-              className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
-            />
-          </div>
+          <BrandImageUploadField
+            name="cover_image_url"
+            label="Brand Cover Image"
+            kind="cover"
+          />
 
           <div>
             <label className="block text-sm font-medium mb-1.5">
@@ -376,7 +370,7 @@ export default function BrandForm() {
               type="url"
               name="website_url"
               placeholder="https://www.logitech.com"
-              className="min-h-11 w-full rounded-lg border px-3 py-2.5 text-base"
+              className="w-full border rounded-lg px-3 py-2.5"
             />
           </div>
         </div>
