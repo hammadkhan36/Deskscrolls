@@ -106,50 +106,82 @@
 
 
 
+     'use client'
 
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import NewsletterForm from './NewsletterForm'
-import { createServerSupabase } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/client'
 
 type FooterCategory = {
   name: string
   slug: string
 }
 
-export default async function Footer() {
-  const supabase = await createServerSupabase()
+export default function Footer() {
+  const [setupCategories, setSetupCategories] =
+    useState<FooterCategory[]>([])
 
-  const [setupCategoriesResult, productCategoriesResult] =
-    await Promise.all([
-      supabase
-        .from('categories')
-        .select('name, slug')
-        .order('name', { ascending: true })
-        .limit(6),
+  const [productCategories, setProductCategories] =
+    useState<FooterCategory[]>([])
 
-      supabase
-        .from('product_categories')
-        .select('name, slug')
-        .eq('published', true)
-        .order('sort_order', { ascending: true })
-        .order('name', { ascending: true })
-        .limit(6),
-    ])
+  useEffect(() => {
+    const supabase = createClient()
+    let active = true
 
-  const setupCategories =
-    (setupCategoriesResult.data ||
-      []) as FooterCategory[]
+    async function loadCategories() {
+      const [
+        setupCategoriesResult,
+        productCategoriesResult,
+      ] = await Promise.all([
+        supabase
+          .from('categories')
+          .select('name, slug')
+          .order('name', { ascending: true })
+          .limit(6),
 
-  const productCategories =
-    (productCategoriesResult.data ||
-      []) as FooterCategory[]
+        supabase
+          .from('product_categories')
+          .select('name, slug')
+          .eq('published', true)
+          .order('sort_order', {
+            ascending: true,
+          })
+          .order('name', {
+            ascending: true,
+          })
+          .limit(6),
+      ])
+
+      if (!active) {
+        return
+      }
+
+      setSetupCategories(
+        (setupCategoriesResult.data ||
+          []) as FooterCategory[]
+      )
+
+      setProductCategories(
+        (productCategoriesResult.data ||
+          []) as FooterCategory[]
+      )
+    }
+
+    loadCategories()
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
     <footer
       className="border-t border-[#E6E1D8] bg-[#F4F0E9]"
       style={{
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily:
+          'Inter, system-ui, sans-serif',
       }}
     >
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
@@ -275,7 +307,9 @@ export default async function Footer() {
                 productCategories.map((category) => (
                   <Link
                     key={category.slug}
-                    href={`/products?category=${category.slug}`}
+                    href={`/products?category=${encodeURIComponent(
+                      category.slug
+                    )}`}
                     className="hover:text-[#B85C2E]"
                   >
                     {category.name}
