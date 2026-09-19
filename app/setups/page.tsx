@@ -1,65 +1,57 @@
-// import Navbar from './../components/Navbar';
-// import SubscribeSection from './../components/SubscribeSection';
-// import AllSetupsSection from './../components/AllSetupsSection';
-// import Footer from './../components/Footer';
-
-// export default function Home() {
-//   return (
-//     <>
-//       <Navbar />
-      
-//       {/* Testimonial Subscribe Section (as shown in your screenshot) */}
-//       <SubscribeSection variant="testimonial" />
-
-//       {/* All Setups Grid */}
-//       <AllSetupsSection />
-
-//       <Footer />
-//     </>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// app/setups/page.tsx
-'use client'
-
-import { Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import type { Metadata } from 'next'
 import Navbar from './../components/Navbar'
 import SubscribeSection from './../components/SubscribeSection'
 import AllSetupsSection from './../components/AllSetupsSection'
 import Footer from './../components/Footer'
 
-function SetupsContent() {
-  const searchParams = useSearchParams()
-  const category = searchParams.get('category') || 'all'
+export const metadata: Metadata = {
+  title: 'Desk Setups & Workspace Inspiration',
+  description:
+    'Explore real desk setups and workspace ideas for gaming, productivity, work from home, minimal desks, and creative spaces.',
+
+  alternates: {
+    canonical: '/setups',
+  },
+
+  openGraph: {
+    title: 'Desk Setups & Workspace Inspiration',
+    description:
+      'Explore real desk setups and workspace ideas for gaming, productivity, work from home, minimal desks, and creative spaces.',
+    url: '/setups',
+    type: 'website',
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Desk Setups & Workspace Inspiration',
+    description:
+      'Explore real desk setups and workspace ideas for gaming, productivity, work from home, minimal desks, and creative spaces.',
+  },
+}
+
+type SetupsPageProps = {
+  searchParams: Promise<{
+    category?: string
+  }>
+}
+
+export default async function SetupsPage({
+  searchParams,
+}: SetupsPageProps) {
+  const params = await searchParams
+  const category = params.category || 'all'
 
   return (
     <>
       <Navbar />
-      <SubscribeSection variant="testimonial" />
-      <AllSetupsSection categorySlug={category} />
+
+      <main>
+        <SubscribeSection variant="testimonial" />
+
+        <AllSetupsSection categorySlug={category} />
+      </main>
+
       <Footer />
     </>
-  )
-}
-
-export default function SetupsPage() {
-  return (
-    <Suspense fallback={<div className="text-center py-20">Loading...</div>}>
-      <SetupsContent />
-    </Suspense>
   )
 }
