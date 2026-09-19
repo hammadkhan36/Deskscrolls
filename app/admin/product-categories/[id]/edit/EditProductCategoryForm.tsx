@@ -85,7 +85,7 @@ export default function EditProductCategoryForm({
       className="space-y-6"
     >
       {/* Basic */}
-      <section className="bg-white border rounded-xl p-6 shadow-sm">
+      <section className="rounded-xl border bg-white p-4 shadow-sm sm:p-6">
         <h2 className="font-semibold text-lg mb-5">
           Basic Information
         </h2>
@@ -100,7 +100,7 @@ export default function EditProductCategoryForm({
               name="name"
               required
               defaultValue={category.name}
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border bg-white px-3 py-2.5 text-base"
             />
           </div>
 
@@ -113,7 +113,7 @@ export default function EditProductCategoryForm({
               name="slug"
               required
               defaultValue={category.slug}
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border bg-white px-3 py-2.5 text-base"
             />
 
             <p className="text-xs text-gray-500 mt-1">
@@ -133,14 +133,14 @@ export default function EditProductCategoryForm({
               defaultValue={
                 category.description || ''
               }
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="w-full rounded-lg border px-3 py-2.5 text-base"
             />
           </div>
         </div>
       </section>
 
       {/* Organization */}
-      <section className="bg-white border rounded-xl p-6 shadow-sm">
+      <section className="rounded-xl border bg-white p-4 shadow-sm sm:p-6">
         <h2 className="font-semibold text-lg mb-5">
           Organization
         </h2>
@@ -156,7 +156,7 @@ export default function EditProductCategoryForm({
               defaultValue={
                 category.parent_id || ''
               }
-              className="w-full border rounded-lg px-3 py-2.5 bg-white"
+              className="min-h-11 w-full rounded-lg border bg-white px-3 py-2.5 text-base"
             >
               <option value="">
                 No parent — Top Level
@@ -191,7 +191,7 @@ export default function EditProductCategoryForm({
               defaultValue={
                 category.sort_order ?? 0
               }
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border bg-white px-3 py-2.5 text-base"
             />
 
             <p className="text-xs text-gray-500 mt-1">
@@ -202,7 +202,7 @@ export default function EditProductCategoryForm({
       </section>
 
       {/* SEO */}
-      <section className="bg-white border rounded-xl p-6 shadow-sm">
+      <section className="rounded-xl border bg-white p-4 shadow-sm sm:p-6">
         <h2 className="font-semibold text-lg mb-5">
           SEO
         </h2>
@@ -218,7 +218,7 @@ export default function EditProductCategoryForm({
               defaultValue={
                 category.meta_title || ''
               }
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="min-h-11 w-full rounded-lg border bg-white px-3 py-2.5 text-base"
             />
           </div>
 
@@ -234,19 +234,19 @@ export default function EditProductCategoryForm({
                 category.meta_description ||
                 ''
               }
-              className="w-full border rounded-lg px-3 py-2.5"
+              className="w-full rounded-lg border px-3 py-2.5 text-base"
             />
           </div>
         </div>
       </section>
 
       {/* Publishing */}
-      <section className="bg-white border rounded-xl p-6 shadow-sm">
+      <section className="rounded-xl border bg-white p-4 shadow-sm sm:p-6">
         <h2 className="font-semibold text-lg mb-5">
           Publishing
         </h2>
 
-        <label className="flex items-start gap-3 cursor-pointer">
+        <label className="flex min-h-12 cursor-pointer items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
           <input
             type="checkbox"
             name="published"
@@ -276,41 +276,31 @@ export default function EditProductCategoryForm({
       )}
 
       {/* Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-8">
-        <div className="flex items-center gap-3">
-          <button
-            type="submit"
-            disabled={
-              loading || deleting
-            }
-            className="bg-black text-white px-5 py-2.5 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50"
-          >
-            {loading
-              ? 'Saving...'
-              : 'Save Changes'}
-          </button>
+      <div className="sticky bottom-0 z-20 -mx-3 flex flex-wrap gap-2 border-t border-slate-200 bg-white/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:pb-8 sm:shadow-none">
+        <button
+          type="submit"
+          disabled={loading || deleting}
+          className="min-h-11 flex-1 rounded-lg bg-black px-5 py-2.5 font-medium text-white hover:bg-gray-800 disabled:opacity-50 sm:flex-none"
+        >
+          {loading ? 'Saving...' : 'Save Changes'}
+        </button>
 
-          <Link
-            href="/admin/product-categories"
-            className="border px-5 py-2.5 rounded-lg text-sm hover:bg-gray-50"
-          >
-            Cancel
-          </Link>
-        </div>
+        <Link
+          href="/admin/product-categories"
+          className="inline-flex min-h-11 flex-1 items-center justify-center rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 sm:flex-none"
+        >
+          Cancel
+        </Link>
 
         <button
           type="button"
           onClick={handleDelete}
-          disabled={
-            loading || deleting
-          }
-          className="text-red-600 border border-red-200 px-4 py-2.5 rounded-lg text-sm hover:bg-red-50 disabled:opacity-50"
+          disabled={loading || deleting}
+          className="min-h-11 w-full rounded-lg border border-red-200 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50 sm:ml-auto sm:w-auto"
         >
-          {deleting
-            ? 'Deleting...'
-            : 'Delete Category'}
+          {deleting ? 'Deleting...' : 'Delete Category'}
         </button>
       </div>
     </form>
   )
-            }
+}
