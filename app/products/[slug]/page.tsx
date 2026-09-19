@@ -4,6 +4,9 @@ import { notFound } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { createServerSupabase } from '@/lib/supabase/server'
+import ProductSetups, {
+  type ProductSetup,
+} from '@/components/products/ProductSetups'
 
 export const revalidate = 300
 
@@ -48,6 +51,19 @@ async function getProduct(slug: string) {
           id,
           name,
           slug
+        )
+      ),
+      setup_products (
+        sort_order,
+        setup:setups (
+          id,
+          title,
+          slug,
+          owner_name,
+          short_intro,
+          cover_image_url,
+          published,
+          deleted_at
         )
       )
     `)
@@ -168,6 +184,41 @@ export default async function ProductPage({
         > => Boolean(category)
       )
 
+  // ─── Related setups (published only, sorted) ───
+  type ProductSetupRelationship = {
+    sort_order: number | null
+    setup:
+      | (ProductSetup & {
+          published: boolean | null
+          deleted_at: string | null
+        })
+      | null
+  }
+
+  const productSetups = (
+    (product.setup_products ?? []) as ProductSetupRelationship[]
+  )
+    .flatMap((relationship) => {
+      const setup = relationship.setup
+
+      if (
+        !setup ||
+        setup.published !== true ||
+        setup.deleted_at !== null
+      ) {
+        return []
+      }
+
+      return [
+        {
+          setup,
+          sortOrder: relationship.sort_order ?? 0,
+        },
+      ]
+    })
+    .sort((first, second) => first.sortOrder - second.sortOrder)
+    .map(({ setup }) => setup)
+
   const siteUrl = 'https://deskscroll.com'
 
   const productUrl =
@@ -191,13 +242,12 @@ export default async function ProductPage({
       : undefined,
 
     brand: brand
-  ? {
-      '@type': 'Brand',
-      name: brand.name,
-      url: `${siteUrl}/brands/${brand.slug}`,
-    }
-  : undefined,
-    
+      ? {
+          '@type': 'Brand',
+          name: brand.name,
+          url: `${siteUrl}/brands/${brand.slug}`,
+        }
+      : undefined,
   }
 
   const breadcrumbJsonLd = {
@@ -348,21 +398,21 @@ export default async function ProductPage({
                 </div>
 
                 {brand && (
-  <Link
-    href={`/brands/${brand.slug}`}
-    className="inline-flex items-center gap-2 text-sm uppercase tracking-wide text-gray-500 mb-2 hover:text-black"
-  >
-    {brand.logo_url && (
-      <img
-        src={brand.logo_url}
-        alt=""
-        className="w-5 h-5 rounded object-contain"
-      />
-    )}
+                  <Link
+                    href={`/brands/${brand.slug}`}
+                    className="inline-flex items-center gap-2 text-sm uppercase tracking-wide text-gray-500 mb-2 hover:text-black"
+                  >
+                    {brand.logo_url && (
+                      <img
+                        src={brand.logo_url}
+                        alt=""
+                        className="w-5 h-5 rounded object-contain"
+                      />
+                    )}
 
-    <span>{brand.name}</span>
-  </Link>
-)}
+                    <span>{brand.name}</span>
+                  </Link>
+                )}
 
                 <h1 className="text-3xl sm:text-5xl font-bold tracking-tight leading-tight">
                   {product.name}
@@ -454,6 +504,9 @@ export default async function ProductPage({
           </section>
         )}
 
+        {/* Related Setups */}
+        <ProductSetups setups={productSetups} />
+
         {/* Bottom CTA */}
         {product.buy_url && (
           <section className="border-t bg-gray-50">
@@ -499,4 +552,4 @@ export default async function ProductPage({
       <Footer />
     </>
   )
-        }
+}
