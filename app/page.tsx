@@ -286,19 +286,62 @@ export default async function HomePage() {
   ])
 
   const setups =
-    (setupsResult.data || []) as FeaturedSetup[]
+  (setupsResult.data || []) as FeaturedSetup[]
 
-  const products =
-    (productsResult.data || []) as FeaturedProduct[]
+const products: FeaturedProduct[] = (
+  productsResult.data || []
+).map((product) => {
+  const brand = product.brand?.[0] ?? null
 
-  const categories =
-    (categoriesResult.data || []) as ProductCategory[]
+  return {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    short_description:
+      product.short_description,
+    cover_image_url:
+      product.cover_image_url,
+    price_text: product.price_text,
+    cta_text: product.cta_text,
+    brand: brand
+      ? {
+          name: brand.name,
+          slug: brand.slug,
+        }
+      : null,
+  }
+})
 
-  const brands =
-    (brandsResult.data || []) as FeaturedBrand[]
+const categories =
+  (categoriesResult.data ||
+    []) as ProductCategory[]
 
-  const blogs =
-    (blogsResult.data || []) as LatestBlog[]
+const brands =
+  (brandsResult.data || []) as FeaturedBrand[]
+
+const blogs: LatestBlog[] = (
+  blogsResult.data || []
+).map((blog) => {
+  const category =
+    blog.category?.[0] ?? null
+
+  return {
+    id: blog.id,
+    title: blog.title,
+    slug: blog.slug,
+    short_intro: blog.short_intro,
+    cover_image_url:
+      blog.cover_image_url,
+    published_at: blog.published_at,
+    reading_time: blog.reading_time,
+    category: category
+      ? {
+          name: category.name,
+          slug: category.slug,
+        }
+      : null,
+  }
+})
 
   return (
     <>
