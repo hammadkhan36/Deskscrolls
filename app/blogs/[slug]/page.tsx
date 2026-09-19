@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -6,6 +5,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerSupabase } from '@/lib/supabase/server'
+import BlogRelatedContent, {
+  type RelatedBrand,
+  type RelatedProduct,
+  type RelatedSetup,
+} from '@/components/blog/BlogRelatedContent'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,6 +36,41 @@ async function getBlog(slug: string) {
       author:profiles(
         full_name,
         avatar_url
+      ),
+      blog_products (
+        product:products (
+          id,
+          name,
+          slug,
+          short_description,
+          cover_image_url,
+          price_text,
+          published,
+          deleted_at
+        )
+      ),
+      blog_brands (
+        brand:brands (
+          id,
+          name,
+          slug,
+          short_description,
+          logo_url,
+          published,
+          deleted_at
+        )
+      ),
+      blog_setups (
+        setup:setups (
+          id,
+          title,
+          slug,
+          owner_name,
+          short_intro,
+          cover_image_url,
+          published,
+          deleted_at
+        )
       )
     `)
     .eq('slug', slug)
@@ -123,6 +162,70 @@ export default async function BlogPage({
   if (!blog) {
     notFound()
   }
+
+  // Normalize related records
+  const relatedProducts = (
+    (blog.blog_products ?? []) as Array<{
+      product: RelatedProduct & {
+        published: boolean | null
+        deleted_at: string | null
+      }
+    }>
+  )
+    .map((relationship) => relationship.product)
+    .filter(
+      (
+        product
+      ): product is RelatedProduct & {
+        published: boolean | null
+        deleted_at: string | null
+      } =>
+        Boolean(product) &&
+        product.published === true &&
+        product.deleted_at === null
+    )
+
+  const relatedBrands = (
+    (blog.blog_brands ?? []) as Array<{
+      brand: RelatedBrand & {
+        published: boolean | null
+        deleted_at: string | null
+      }
+    }>
+  )
+    .map((relationship) => relationship.brand)
+    .filter(
+      (
+        brand
+      ): brand is RelatedBrand & {
+        published: boolean | null
+        deleted_at: string | null
+      } =>
+        Boolean(brand) &&
+        brand.published === true &&
+        brand.deleted_at === null
+    )
+
+  const relatedSetups = (
+    (blog.blog_setups ?? []) as Array<{
+      setup: RelatedSetup & {
+        published: boolean | null
+        deleted_at: string | null
+      }
+    }>
+  )
+    .map((relationship) => relationship.setup)
+    .filter(
+      (
+        setup
+      ): setup is RelatedSetup & {
+        published: boolean | null
+        deleted_at: string | null
+      } =>
+        Boolean(setup) &&
+        setup.published === true &&
+        setup.deleted_at === null
+    )
 
   const supabase = await createServerSupabase()
 
@@ -359,7 +462,14 @@ export default async function BlogPage({
 
           </article>
 
-          <div className="bg-[#F5EDE4] border border-[#E6E1D8] rounded-xl p-6 text-center mb-6">
+          {/* Related Content (Products / Brands / Setups) */}
+          <BlogRelatedContent
+            products={relatedProducts}
+            brands={relatedBrands}
+            setups={relatedSetups}
+          />
+
+          <div className="bg-[#F5EDE4] border border-[#E6E1D8] rounded-xl p-6 text-center mb-6 mt-10">
 
             <p className="text-[#1E1E1E] font-medium mb-1">
               Found this useful? Share it with a friend. ❤️
@@ -484,4 +594,3 @@ export default async function BlogPage({
     </>
   )
 }
-
