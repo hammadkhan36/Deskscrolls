@@ -485,7 +485,7 @@ export default function Navbar() {
       {isMenuOpen && (
         <div
           id="mobile-navigation"
-          className="fixed inset-x-0 bottom-0 top-16 overflow-y-auto border-t border-[#E6E1D8] bg-[#FAFAF7] md:hidden"
+          className="absolute left-0 right-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-[#E6E1D8] bg-[#FAFAF7] shadow-[0_18px_40px_rgba(30,30,30,0.12)] md:hidden"
         >
           <div className="mx-auto flex max-w-7xl flex-col px-4 pb-8 pt-4 sm:px-6">
             <button
