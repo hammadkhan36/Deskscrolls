@@ -6,8 +6,10 @@ import SubmissionsTable from './SubmissionsTable'
 export default async function AdminSubmissionsPage({
   searchParams,
 }: {
-  searchParams: { status?: string }
+  searchParams: Promise<{ status?: string }>
 }) {
+  const { status } = await searchParams
+
   const supabase = await createServerSupabase()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -17,7 +19,7 @@ export default async function AdminSubmissionsPage({
     return <div className="p-10 text-center text-red-600">Access Denied – Manager or Admin only.</div>
   }
 
-  const statusFilter = searchParams.status || 'pending'
+  const statusFilter = status || 'pending'
 
   let query = supabase.from('submissions').select('*').order('created_at', { ascending: false })
   if (statusFilter !== 'all') {
@@ -27,8 +29,17 @@ export default async function AdminSubmissionsPage({
   const { data: submissions } = await query
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Submissions</h1>
+    <div className="mx-auto max-w-6xl">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold sm:text-3xl">
+          Submissions
+        </h1>
+
+        <p className="mt-2 text-sm text-slate-600">
+          Review submitted desk setups and approve or reject them.
+        </p>
+      </div>
+
       <SubmissionsTable submissions={submissions ?? []} currentStatus={statusFilter} />
     </div>
   )

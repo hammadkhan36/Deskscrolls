@@ -8,6 +8,8 @@ import { useRouter, useParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { uploadImage } from '@/lib/utils/supabase-uploads'
 import CategoryMultiSelect from '@/components/CategoryMultiSelect'
+import SetupProductSelect, { useSetupProductOptions } from '@/components/SetupProductSelect'
+import { saveSetupProducts } from '@/admin/setup-product-actions'
 
 // Dynamically import editor (same as new page)
 const UltimateTipTapEditor = dynamic(() => import('@/components/UltimateTipTapEditor'), {
@@ -20,6 +22,9 @@ export default function EditSetup() {
   const router = useRouter()
   const params = useParams()
   const setupId = params.id as string
+  const [productIds, setProductIds] = useState<string[]>([])
+  const { products, productsLoading, productsError, retryProducts } = useSetupProductOptions()
+  const [setupLoaded, setSetupLoaded] = useState(false)
 
   // Form fields
   const [title, setTitle] = useState('')
@@ -65,6 +70,7 @@ export default function EditSetup() {
   useEffect(() => {
     const fetchSetup = async () => {
       setFetching(true)
+      setSetupLoaded(false)
       // const { data: setup, error } = await supabase
       //   .from('setups')
       //   .select('*, setup_images(id, image_url)')
@@ -75,7 +81,8 @@ export default function EditSetup() {
         .select(`
           *,
           setup_images(id, image_url),
-          setup_categories(category_id)
+          setup_categories(category_id),
+          setup_products(product_id, sort_order)
         `)
         .eq('id', setupId)
         .single()
@@ -86,6 +93,11 @@ export default function EditSetup() {
         setFetching(false)
         return
       }
+
+      setProductIds((setup.setup_products || [])
+        .sort((a: { sort_order: number | null }, b: { sort_order: number | null }) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+        .map((link: { product_id: string }) => link.product_id))
+      setSetupLoaded(true)
 
       // Populate form
       setTitle(setup.title)
@@ -133,6 +145,8 @@ export default function EditSetup() {
 
   //  Save handler (same as submit but without redirect, so we can show success message and keep editing)
   const handleSave = async () => {
+    if (loading || saving || !setupLoaded || productsLoading || productsError) return
+    setSaved(false)
     setSaving(true)
     setError('')
     try {
@@ -159,6 +173,8 @@ export default function EditSetup() {
         })
         .eq('id', setupId)
       if (updateError) throw updateError
+      const productResult = await saveSetupProducts(setupId, productIds)
+      if (productResult.error) throw new Error(`Setup fields saved, but products did not fully save: ${productResult.error}`)
 
       // Sync categories
       await supabase.from('setup_categories').delete().eq('setup_id', setupId)
@@ -241,6 +257,8 @@ export default function EditSetup() {
   // Submit handler (update)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (loading || saving || !setupLoaded || productsLoading || productsError) return
+    setSaved(false)
     setLoading(true)
     setError('')
 
@@ -273,6 +291,8 @@ export default function EditSetup() {
         .eq('id', setupId)
 
       if (updateError) throw updateError
+      const productResult = await saveSetupProducts(setupId, productIds)
+      if (productResult.error) throw new Error(`Setup fields saved, but products did not fully save: ${productResult.error}`)
 
 
       // Sync categories: delete all existing, then insert new
@@ -448,6 +468,12 @@ export default function EditSetup() {
           ))}
         </select> */}
 
+        <SetupProductSelect
+          products={products} selectedIds={productIds} onChange={setProductIds}
+          disabled={loading || saving} loading={productsLoading}
+          error={productsError} onRetry={retryProducts}
+        />
+
         {/* Published toggle */}
         <label className="flex items-center space-x-2">
           <input
@@ -515,7 +541,7 @@ export default function EditSetup() {
         <button
           type="button"
           onClick={handleSave}
-          disabled={saving}
+          disabled={loading || saving || !setupLoaded || productsLoading || !!productsError}
           className="px-6 py-3 rounded-lg text-lg font-semibold bg-gray-600 text-white hover:bg-gray-700 disabled:opacity-50"
         >
           {saving ? 'Saving...' : 'Save'}
@@ -523,7 +549,7 @@ export default function EditSetup() {
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || saving || !setupLoaded || productsLoading || !!productsError}
           className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-blue-700 disabled:opacity-50"
         >
           {loading ? 'Updating...' : 'Update Setup'}

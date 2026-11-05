@@ -374,6 +374,8 @@ import dynamic from 'next/dynamic'
 import { uploadImage } from '@/lib/utils/supabase-uploads'
 
 import CategoryMultiSelect from '@/components/CategoryMultiSelect'
+import SetupProductSelect, { useSetupProductOptions } from '@/components/SetupProductSelect'
+import { saveSetupProducts } from '@/admin/setup-product-actions'
 
 
 // Dynamically import editor to avoid SSR issues with browser APIs
@@ -385,6 +387,9 @@ const UltimateTipTapEditor = dynamic(() => import('@/components/UltimateTipTapEd
 export default function NewSetup() {
   const supabase = createClient()
   const router = useRouter()
+  const [createdSetupId, setCreatedSetupId] = useState<string | null>(null)
+  const [productIds, setProductIds] = useState<string[]>([])
+  const { products, productsLoading, productsError, retryProducts } = useSetupProductOptions()
 
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
@@ -424,6 +429,7 @@ export default function NewSetup() {
 
   // ─── NEW: Save Draft handler ───
   const handleSaveDraft = async () => {
+    if (loading || savingDraft || productsLoading || productsError) return
     setSavingDraft(true)
     setError('')
     try {
@@ -437,7 +443,8 @@ export default function NewSetup() {
 
       const { data: setup, error: insertError } = await supabase
         .from('setups')
-        .insert({
+        .upsert({
+          ...(createdSetupId ? { id: createdSetupId } : {}),
           title,
           slug,
           owner_name: ownerName,
@@ -451,11 +458,14 @@ export default function NewSetup() {
         .select('id')
         .single()
       if (insertError) throw insertError
+      setCreatedSetupId(setup.id)
+      const productResult = await saveSetupProducts(setup.id, productIds)
+      if (productResult.error) throw new Error(`Setup saved, but products did not fully save: ${productResult.error}`)
 
       // Categories
       if (setup && categoryIds.length > 0) {
         const rows = categoryIds.map(catId => ({ setup_id: setup.id, category_id: catId }))
-        const { error: catError } = await supabase.from('setup_categories').insert(rows)
+        const { error: catError } = await supabase.from('setup_categories').upsert(rows, { onConflict: 'setup_id,category_id' })
         if (catError) throw catError
       }
 
@@ -483,6 +493,7 @@ export default function NewSetup() {
   // Original submit handler (creates and goes to admin)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (loading || savingDraft || productsLoading || productsError) return
     setLoading(true)
     setError('')
 
@@ -499,7 +510,8 @@ export default function NewSetup() {
       // Insert setup
       const { data: setup, error: insertError } = await supabase
         .from('setups')
-        .insert({
+        .upsert({
+          ...(createdSetupId ? { id: createdSetupId } : {}),
           title,
           slug,
           owner_name: ownerName,
@@ -515,6 +527,9 @@ export default function NewSetup() {
         .single()
 
       if (insertError) throw insertError
+      setCreatedSetupId(setup.id)
+      const productResult = await saveSetupProducts(setup.id, productIds)
+      if (productResult.error) throw new Error(`Setup saved, but products did not fully save: ${productResult.error}`)
 
 
       // Insert multiple categories
@@ -523,7 +538,7 @@ export default function NewSetup() {
           setup_id: setup.id,
           category_id: catId,
         }))
-        const { error: catError } = await supabase.from('setup_categories').insert(rows)
+        const { error: catError } = await supabase.from('setup_categories').upsert(rows, { onConflict: 'setup_id,category_id' })
         if (catError) throw catError
       }
 
@@ -553,6 +568,9 @@ export default function NewSetup() {
       <h1 className="text-2xl font-bold mb-6">New Desk Setup</h1>
       {error && <div className="bg-red-100 text-red-700 p-2 rounded mb-4">{error}</div>}
 
+      {error && createdSetupId && (
+        <a href={`/admin/edit/${createdSetupId}`} className="mb-4 block text-sm underline">Continue editing the saved setup</a>
+      )}
       <form onSubmit={handleSubmit} className="space-y-5">
         <input
           type="text"
@@ -629,6 +647,12 @@ export default function NewSetup() {
 
 
 
+        <SetupProductSelect
+          products={products} selectedIds={productIds} onChange={setProductIds}
+          disabled={loading || savingDraft} loading={productsLoading}
+          error={productsError} onRetry={retryProducts}
+        />
+
         <div>
           <label className="block text-sm font-medium mb-1">Cover Image</label>
           <input
@@ -657,7 +681,7 @@ export default function NewSetup() {
 
         {/* <button
           type="submit"
-          disabled={loading}
+          disabled={loading || savingDraft || productsLoading || !!productsError}
           className="w-full bg-green-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-green-700 disabled:opacity-50"
         >
           {loading ? 'Saving...' : 'Create Setup'}
@@ -670,14 +694,14 @@ export default function NewSetup() {
           <button
             type="button"
             onClick={handleSaveDraft}
-            disabled={savingDraft}
+            disabled={loading || savingDraft || productsLoading || !!productsError}
             className="px-6 py-3 rounded-lg text-lg font-semibold bg-gray-600 text-white hover:bg-gray-700 disabled:opacity-50"
           >
             {savingDraft ? 'Saving...' : 'Save Draft'}
           </button>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || savingDraft || productsLoading || !!productsError}
             className="px-6 py-3 rounded-lg text-lg font-semibold bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
           >
             {loading ? 'Creating...' : 'Create Setup'}

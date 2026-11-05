@@ -30,9 +30,21 @@ export default async function AdminCategoriesPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Categories</h1>
-      <CategoriesTable categories={categories ?? []} isAdmin={profile.role === 'admin'} />
+    <div className="mx-auto max-w-4xl">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold sm:text-3xl">
+          Setup Categories
+        </h1>
+
+        <p className="mt-2 text-sm text-slate-600">
+          Organize desk setups into categories used across the website.
+        </p>
+      </div>
+
+      <CategoriesTable
+        categories={categories ?? []}
+        isAdmin={profile.role === 'admin'}
+      />
     </div>
   )
 }
