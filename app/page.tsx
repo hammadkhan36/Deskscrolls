@@ -1,270 +1,358 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
-import NewsletterSubscribe from './components/NewsletterSubscribe'
-import { createServerSupabase } from '@/lib/supabase/server'
+import SetupCard from './components/home/SetupCard'
+import HeroMosaic from './components/home/HeroMosaic'
+import CategoryChips, { type CategoryChip } from './components/home/CategoryChips'
+import ShareSetupBand from './components/home/ShareSetupBand'
+import { toOne, type HomeSetup } from './components/home/types'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
-  title: 'DeskScroll — Real Desk Setups & Workspace Inspiration',
+  title: 'DeskScroll — Real Desk Setups from the Community',
   description:
-    'Explore real desk setups, workspace tours and practical inspiration from creators, builders and professionals.',
+    'Browse real desk setups shared by the DeskScroll community: workspace tours, gear lists and the ideas behind how people actually work.',
   alternates: {
     canonical: '/',
   },
 }
 
-type FeaturedSetup = {
-  id: string
-  title: string
-  slug: string
-  owner_name: string
-  short_intro: string | null
-  cover_image_url: string | null
+const SETUP_COLUMNS = `
+  id,
+  title,
+  slug,
+  owner_name,
+  short_intro,
+  cover_image_url,
+  featured,
+  published_at,
+  primary_category:categories!setups_category_id_fkey(name, slug)
+`
+
+const HERO_COUNT = 3
+const GRID_COUNT = 9
+const FEATURED_COUNT = 2
+
+type RawSetup = Omit<HomeSetup, 'primary_category'> & {
+  primary_category:
+    | HomeSetup['primary_category']
+    | NonNullable<HomeSetup['primary_category']>[]
 }
 
-function MissingImage({ label }: { label: string }) {
-  return (
-    <div className="flex h-full w-full items-center justify-center bg-[#EEEAE3] px-4 text-center text-sm text-[#8A8177]">
-      {label}
-    </div>
+function normalise(rows: RawSetup[] | null | undefined): HomeSetup[] {
+  return (rows || []).map((row) => ({
+    ...row,
+    primary_category: toOne(row.primary_category),
+  }))
+}
+
+async function getHomeData() {
+  const supabase = await createServerSupabaseClient()
+
+  const publishedSetups = () =>
+    supabase
+      .from('setups')
+      .select(SETUP_COLUMNS)
+      .eq('published', true)
+      .is('deleted_at', null)
+      .order('published_at', { ascending: false })
+
+  const [latestRes, featuredRes, categoriesRes, usageRes, totalRes] =
+    await Promise.all([
+      publishedSetups().limit(HERO_COUNT + GRID_COUNT + FEATURED_COUNT),
+      publishedSetups().eq('featured', true).limit(FEATURED_COUNT),
+      supabase.from('categories').select('id, name, slug').order('name'),
+      supabase
+        .from('setups')
+        .select('category_id')
+        .eq('published', true)
+        .is('deleted_at', null),
+      supabase
+        .from('setups')
+        .select('id', { count: 'exact', head: true })
+        .eq('published', true)
+        .is('deleted_at', null),
+    ])
+
+  for (const res of [latestRes, featuredRes, categoriesRes, usageRes, totalRes]) {
+    if (res.error) console.error('Homepage query failed:', res.error.message)
+  }
+
+  const featured = normalise(featuredRes.data as RawSetup[] | null)
+  const featuredIds = new Set(featured.map((s) => s.id))
+  const latest = normalise(latestRes.data as RawSetup[] | null).filter(
+    (s) => !featuredIds.has(s.id)
   )
+
+  const heroSetups = latest.slice(0, HERO_COUNT)
+  let gridSetups = latest.slice(HERO_COUNT, HERO_COUNT + GRID_COUNT)
+  // Keep the 3-column grid full: trim to a multiple of 3 once we have more than one row.
+  if (gridSetups.length > 3) {
+    gridSetups = gridSetups.slice(0, Math.floor(gridSetups.length / 3) * 3)
+  }
+
+  const usage = new Map<string, number>()
+  for (const row of (usageRes.data || []) as { category_id: string | null }[]) {
+    if (row.category_id) {
+      usage.set(row.category_id, (usage.get(row.category_id) || 0) + 1)
+    }
+  }
+
+  const categories: CategoryChip[] = (
+    (categoriesRes.data || []) as { id: string; name: string; slug: string }[]
+  )
+    .map((c) => ({ ...c, count: usage.get(c.id) || 0 }))
+    .filter((c) => c.count > 0)
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+
+  return {
+    featured,
+    heroSetups,
+    gridSetups,
+    categories,
+    totalCount: totalRes.count ?? latest.length + featured.length,
+    hasError: Boolean(latestRes.error),
+  }
 }
 
 export default async function HomePage() {
-  const supabase = await createServerSupabase()
+  const { featured, heroSetups, gridSetups, categories, totalCount, hasError } =
+    await getHomeData()
 
-  const { data, error } = await supabase
-    .from('setups')
-    .select(`
-      id,
-      title,
-      slug,
-      owner_name,
-      short_intro,
-      cover_image_url
-    `)
-    .eq('published', true)
-    .is('deleted_at', null)
-    .order('featured', { ascending: false })
-    .order('published_at', { ascending: false })
-    .limit(7)
-
-  if (error) {
-    console.error('Failed to load homepage setups:', error)
-  }
-
-  const setups = (data || []) as FeaturedSetup[]
-  const heroSetup = setups[0] || null
-  const featuredSetups = setups.slice(1, 7)
+  const nothingPublished =
+    heroSetups.length === 0 && gridSetups.length === 0 && featured.length === 0
 
   return (
     <>
       <Navbar />
 
-      <main style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
-        <section className="relative overflow-hidden border-b border-[#E6E1D8] bg-[#FAFAF7]">
+      <main className="font-sans">
+        {/* ── Hero ─────────────────────────────────────────────── */}
+        <section
+          aria-labelledby="hero-heading"
+          className="relative overflow-hidden border-b border-border bg-bg"
+        >
           <div
             aria-hidden="true"
-            className="absolute -right-28 -top-32 h-96 w-96 rounded-full bg-[#F5E6D3] blur-3xl"
+            className="absolute -right-28 -top-32 h-96 w-96 rounded-full bg-primary-light blur-3xl"
           />
           <div
             aria-hidden="true"
-            className="absolute -bottom-40 -left-28 h-96 w-96 rounded-full bg-[#EEE8DF] blur-3xl"
+            className="absolute -bottom-40 -left-28 h-96 w-96 rounded-full bg-surface-alt blur-3xl"
           />
 
-          <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:py-24">
+          <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1fr_1fr] lg:items-center lg:px-8 lg:py-24">
             <div>
-              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#BF6F4A]">
-                Real desks. Real people. Real inspiration.
+              <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-accent">
+                <span
+                  aria-hidden="true"
+                  className="h-1.5 w-1.5 rounded-full bg-primary"
+                />
+                Community desk setups
               </p>
 
-              <h1 className="max-w-3xl text-4xl font-bold leading-[1.07] tracking-[-1.5px] text-[#1E1E1E] sm:text-5xl lg:text-6xl">
-                Explore how people build spaces where great work happens.
+              <h1
+                id="hero-heading"
+                className="max-w-2xl text-balance text-4xl font-bold leading-[1.05] tracking-[-1.5px] text-text-1 sm:text-5xl lg:text-6xl"
+              >
+                Real desks, shared by{' '}
+                <span className="font-brand italic text-brand-accent">
+                  real people.
+                </span>
               </h1>
 
-              <p className="mt-6 max-w-xl text-base leading-7 text-[#6B6B6B] sm:text-lg">
-                DeskScroll is a curated collection of real desk setups and
-                workspace tours — the desks, tools and ideas behind how people
-                actually work.
+              <p className="mt-6 max-w-xl text-base leading-7 text-text-2 sm:text-lg">
+                DeskScroll is a hand-reviewed collection of workspace tours from
+                the community: the desks, the gear and the small decisions
+                behind how people actually work.
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Link
                   href="/setups"
-                  className="inline-flex min-h-12 items-center justify-center rounded-md bg-[#D97742] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#B85C2E]"
+                  className="inline-flex min-h-12 items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 >
-                  Explore desk setups
+                  Browse all setups
                 </Link>
-
                 <Link
                   href="/submit"
-                  className="inline-flex min-h-12 items-center justify-center rounded-md border border-[#D9D2C7] bg-white px-6 py-3 text-sm font-semibold text-[#1E1E1E] transition-colors hover:border-[#D97742] hover:text-[#B85C2E]"
+                  className="inline-flex min-h-12 items-center justify-center rounded-md border border-border bg-surface px-6 py-3 text-sm font-semibold text-text-1 transition-colors hover:border-primary hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 >
                   Share your setup
                 </Link>
               </div>
 
-              <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-[#E6E1D8] pt-5 text-xs font-medium text-[#8A8177]">
-                <span>Curated workspace tours</span>
-                <span>Real setup photos</span>
-                <span>New setups regularly</span>
-              </div>
+              <dl className="mt-10 grid max-w-md grid-cols-3 gap-4 border-t border-border pt-6">
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-text-2">
+                    Setups
+                  </dt>
+                  <dd className="mt-1 text-2xl font-bold tracking-tight text-text-1">
+                    {totalCount}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-text-2">
+                    Categories
+                  </dt>
+                  <dd className="mt-1 text-2xl font-bold tracking-tight text-text-1">
+                    {categories.length}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wider text-text-2">
+                    Reviewed
+                  </dt>
+                  <dd className="mt-1 text-2xl font-bold tracking-tight text-text-1">
+                    By hand
+                  </dd>
+                </div>
+              </dl>
             </div>
 
-            <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
-              {heroSetup?.cover_image_url ? (
-                <Link
-                  href={`/setups/${heroSetup.slug}`}
-                  className="group block overflow-hidden rounded-3xl border border-[#E6E1D8] bg-white p-2 shadow-[0_24px_70px_rgba(72,57,41,0.16)]"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-[20px] bg-[#EEEAE3]">
-                    <Image
-                      src={heroSetup.cover_image_url}
-                      alt={heroSetup.title}
-                      fill
-                      priority
-                      sizes="(max-width: 1024px) 100vw, 45vw"
-                      className="object-cover transition duration-700 group-hover:scale-105"
-                    />
-
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent p-6 pt-24">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/70">
-                        Featured workspace
-                      </p>
-                      <h2 className="mt-1 text-xl font-semibold text-white sm:text-2xl">
-                        {heroSetup.title}
-                      </h2>
-                      <p className="mt-1 text-sm text-white/75">
-                        Setup by {heroSetup.owner_name}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              ) : (
-                <div className="flex aspect-[4/3] items-center justify-center rounded-3xl border border-[#E6E1D8] bg-[#F4F0E9] p-8 text-center">
-                  <div>
-                    <p
-                      className="text-3xl italic text-[#BF6F4A]"
-                      style={{ fontFamily: '"Playfair Display", Georgia, serif' }}
-                    >
-                      DeskScroll
-                    </p>
-                    <p className="mt-3 text-sm text-[#6B6B6B]">
-                      Real workspace inspiration, one desk at a time.
-                    </p>
-                  </div>
-                </div>
-              )}
+            <div className="mx-auto w-full max-w-lg lg:max-w-none">
+              <HeroMosaic setups={heroSetups} />
             </div>
           </div>
         </section>
 
-        <section className="bg-white py-16 sm:py-20">
+        {/* ── Browse by category ───────────────────────────────── */}
+        {categories.length > 0 && (
+          <section
+            aria-labelledby="categories-heading"
+            className="border-b border-border bg-surface"
+          >
+            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+              <div className="mb-4 flex items-end justify-between gap-4">
+                <h2
+                  id="categories-heading"
+                  className="text-sm font-semibold uppercase tracking-[0.18em] text-text-2"
+                >
+                  Browse by category
+                </h2>
+              </div>
+              <CategoryChips categories={categories} totalCount={totalCount} />
+            </div>
+          </section>
+        )}
+
+        {/* ── Featured setups ──────────────────────────────────── */}
+        {featured.length > 0 && (
+          <section
+            aria-labelledby="featured-heading"
+            className="bg-surface-alt/60 py-16 sm:py-20"
+          >
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="mb-8">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-accent">
+                  Editor&rsquo;s picks
+                </p>
+                <h2
+                  id="featured-heading"
+                  className="text-2xl font-bold tracking-[-0.6px] text-text-1 sm:text-3xl"
+                >
+                  Featured setups
+                </h2>
+              </div>
+
+              <div
+                className={`grid gap-6 ${
+                  featured.length > 1 ? 'lg:grid-cols-2' : 'lg:grid-cols-[2fr_1fr]'
+                }`}
+              >
+                {featured.map((setup) => (
+                  <SetupCard
+                    key={setup.id}
+                    setup={setup}
+                    variant="featured"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ── Latest from the community ────────────────────────── */}
+        <section
+          aria-labelledby="latest-heading"
+          className="bg-surface py-16 sm:py-20"
+        >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#BF6F4A]">
-                  Workspace tours
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-accent">
+                  Fresh on DeskScroll
                 </p>
-                <h2 className="text-2xl font-bold tracking-[-0.6px] text-[#1E1E1E] sm:text-3xl">
-                  Explore Desk Setups
+                <h2
+                  id="latest-heading"
+                  className="text-2xl font-bold tracking-[-0.6px] text-text-1 sm:text-3xl"
+                >
+                  Latest community setups
                 </h2>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6B6B6B] sm:text-base">
-                  Step inside real workspaces and discover the details, choices
-                  and ideas behind each setup.
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-text-2 sm:text-base">
+                  New workspaces, straight from the people who built them.
                 </p>
               </div>
 
               <Link
                 href="/setups"
-                className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-[#B85C2E] transition-colors hover:text-[#8F4526]"
+                className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary-dark transition-colors hover:text-primary"
               >
-                Browse all setups <span aria-hidden="true">→</span>
+                View all setups <span aria-hidden="true">→</span>
               </Link>
             </div>
 
-            {featuredSetups.length > 0 ? (
+            {hasError ? (
+              <p className="rounded-xl border border-red-200 bg-red-50 px-5 py-6 text-sm text-red-700">
+                We couldn&rsquo;t load the latest setups right now. Please
+                refresh the page.
+              </p>
+            ) : nothingPublished ? (
+              <div className="rounded-2xl border border-dashed border-border bg-bg px-6 py-14 text-center">
+                <p className="font-brand text-2xl italic text-brand-accent">
+                  Be the first.
+                </p>
+                <p className="mx-auto mt-2 max-w-md text-sm text-text-2">
+                  No setups have been published yet. Share yours and it could be
+                  the one everybody sees first.
+                </p>
+                <Link
+                  href="/submit"
+                  className="mt-6 inline-flex min-h-11 items-center justify-center rounded-md bg-primary px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-dark"
+                >
+                  Submit your desk setup
+                </Link>
+              </div>
+            ) : gridSetups.length > 0 ? (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {featuredSetups.map((setup) => (
-                  <Link
-                    key={setup.id}
-                    href={`/setups/${setup.slug}`}
-                    className="group overflow-hidden rounded-2xl border border-[#E6E1D8] bg-[#FAFAF7] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(30,30,30,0.1)]"
-                  >
-                    <div className="relative aspect-[16/10] overflow-hidden">
-                      {setup.cover_image_url ? (
-                        <Image
-                          src={setup.cover_image_url}
-                          alt={setup.title}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          className="object-cover transition duration-500 group-hover:scale-105"
-                        />
-                      ) : (
-                        <MissingImage label="Setup image coming soon" />
-                      )}
-                    </div>
-
-                    <div className="p-5">
-                      <p className="text-[11px] font-semibold uppercase tracking-wider text-[#BF6F4A]">
-                        Setup by {setup.owner_name}
-                      </p>
-                      <h3 className="mt-2 text-xl font-semibold leading-snug text-[#1E1E1E]">
-                        {setup.title}
-                      </h3>
-                      {setup.short_intro && (
-                        <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#6B6B6B]">
-                          {setup.short_intro}
-                        </p>
-                      )}
-                      <span className="mt-4 inline-flex text-sm font-semibold text-[#B85C2E]">
-                        Explore workspace →
-                      </span>
-                    </div>
-                  </Link>
+                {gridSetups.map((setup) => (
+                  <SetupCard key={setup.id} setup={setup} />
                 ))}
               </div>
             ) : (
-              <p className="rounded-xl border border-[#E6E1D8] bg-[#FAFAF7] p-6 text-sm text-[#6B6B6B]">
-                More desk setups are coming soon.
+              <p className="rounded-xl border border-border bg-bg px-5 py-8 text-center text-sm text-text-2">
+                Everything we have is already on display above. More setups are
+                coming soon.
               </p>
             )}
 
-            <div className="mt-10 text-center">
-              <Link
-                href="/setups"
-                className="inline-flex min-h-11 items-center justify-center rounded-md border border-[#D9D2C7] bg-white px-6 py-2.5 text-sm font-semibold text-[#1E1E1E] transition-colors hover:border-[#D97742] hover:text-[#B85C2E]"
-              >
-                View all desk setups
-              </Link>
-            </div>
+            {!nothingPublished && !hasError && (
+              <div className="mt-12 text-center">
+                <Link
+                  href="/setups"
+                  className="inline-flex min-h-12 items-center justify-center rounded-md border border-border bg-surface px-8 py-3 text-sm font-semibold text-text-1 transition-colors hover:border-primary hover:text-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                >
+                  Browse all {totalCount > 0 ? totalCount : ''} setups
+                </Link>
+              </div>
+            )}
           </div>
         </section>
 
-        <section className="border-y border-[#E6E1D8] bg-[#F7F3ED]">
-          <div className="mx-auto max-w-5xl px-4 py-12 text-center sm:px-6 sm:py-14">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#BF6F4A]">
-              Your desk belongs here too
-            </p>
-            <h2 className="mt-3 text-2xl font-bold tracking-[-0.5px] text-[#1E1E1E] sm:text-3xl">
-              Built a workspace you love?
-            </h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#6B6B6B] sm:text-base">
-              Share your setup with DeskScroll and help others discover new
-              ideas for their own workspace.
-            </p>
-            <Link
-              href="/submit"
-              className="mt-6 inline-flex min-h-11 items-center justify-center rounded-md bg-[#1E1E1E] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#383838]"
-            >
-              Submit your desk setup
-            </Link>
-          </div>
-        </section>
-
-        <NewsletterSubscribe />
+        {/* ── Share your setup ─────────────────────────────────── */}
+        <ShareSetupBand />
       </main>
 
       <Footer />
