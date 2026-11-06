@@ -13,7 +13,7 @@
 | UI | React 19, Tailwind 3.4, framer-motion, lucide-react, react-hot-toast | |
 | Rich text | TipTap 2 (`UltimateTipTapEditor`, `RichEditor`, `Editor`, `PostEditor`) | 4 editor components exist, 2 are used |
 | Auth + DB | Supabase (`@supabase/ssr`) | Anon key only. **No service-role key anywhere** – every write relies on RLS |
-| Storage | Supabase Storage buckets `setups`, `submissions`, `blog-images`; ImageKit for `/submit` uploads | Two different upload backends |
+| Storage | Supabase Storage buckets `setups`, `site-media`, `blog-images`; ImageKit for `/submit` uploads | Three upload helpers, two backends |
 | Hosting | Vercel (implied by `.vercel` in `.gitignore`) | Build currently **fails** (see audit) |
 
 ## 2. Route map
@@ -111,8 +111,9 @@ profiles (see §3)
 | Bucket / folder | Written by | Public? |
 |---|---|---|
 | Supabase `setups/covers`, `setups/gallery` | `app/lib/utils/supabase-uploads.ts` (browser) | yes (getPublicUrl) |
-| Supabase `submissions` | legacy `SubmitForm` only | – |
-| Supabase `blog-images` | admin blog editor | yes |
+| Supabase `site-media/brands/logos`, `site-media/brands/covers` | `BrandImageUploadField.tsx` (browser) | yes |
+| Supabase `submissions/user-uploads` | legacy `SubmitForm` (commented-out code only) | – |
+| Supabase `blog-images` (bucket root) | `admin/blogs/new/uploadImage.ts` server action, also used by products | yes |
 | ImageKit `/submissions/<name>-<2 random chars>/` | `app/actions/uploadMedia.ts` (server action, **no auth**) | yes |
 
 ## 5. Key flows
